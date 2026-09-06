@@ -15,6 +15,27 @@ namespace DS3ConnectionInfo {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
     public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("zh-CN")]
+        public string UILanguage {
+            get { return (string)this["UILanguage"]; }
+            set { this["UILanguage"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("<ArrayOfString />")]
+        public global::System.Collections.Specialized.StringCollection SessionColumnOrder {
+            get { return (global::System.Collections.Specialized.StringCollection)this["SessionColumnOrder"]; }
+            set { this["SessionColumnOrder"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("<ArrayOfString />")]
+        public global::System.Collections.Specialized.StringCollection OverlayColumnColors {
+            get { return (global::System.Collections.Specialized.StringCollection)this["OverlayColumnColors"]; }
+            set { this["OverlayColumnColors"] = value; }
+        }
+
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
         
         public static Settings Default {
@@ -374,6 +395,15 @@ namespace DS3ConnectionInfo {
   <string>The standard deviation of the player's ping over the last 10 samples. A high value indicates an unstable connection. Displayed in milliseconds.</string>
   <string>The ratio of late vs. on time STUN reply packets from the player, as a percentage. Another indicator of connection quality.</string>
   <string>The state and country of the player, if available.</string>
+  <string>等级：读取本地同步的角色数据。</string>
+  <string>生命力：读取本地同步的角色数据。</string>
+  <string>集中力：读取本地同步的角色数据。</string>
+  <string>持久力：读取本地同步的角色数据。</string>
+  <string>力量：读取本地同步的角色数据。</string>
+  <string>敏捷：读取本地同步的角色数据。</string>
+  <string>智力：读取本地同步的角色数据。</string>
+  <string>信仰：读取本地同步的角色数据。</string>
+  <string>角色当前血量 / 当前有效最大生命值；未加载时显示 —。</string>
 </ArrayOfString>")]
         public global::System.Collections.Specialized.StringCollection SessColumnDescs {
             get {
@@ -396,6 +426,15 @@ namespace DS3ConnectionInfo {
   <string>Visible</string>
   <string>Hidden</string>
   <string>Visible</string>
+  <string>Hidden</string>
+  <string>Hidden</string>
+  <string>Hidden</string>
+  <string>Hidden</string>
+  <string>Hidden</string>
+  <string>Hidden</string>
+  <string>Hidden</string>
+  <string>Hidden</string>
+  <string>Hidden</string>
 </ArrayOfString>")]
         public global::System.Collections.Specialized.StringCollection SessColumnVisibility {
             get {
@@ -419,6 +458,15 @@ namespace DS3ConnectionInfo {
   <string>Visible</string>
   <string>Hidden</string>
   <string>Visible</string>
+  <string>Hidden</string>
+  <string>Hidden</string>
+  <string>Hidden</string>
+  <string>Hidden</string>
+  <string>Hidden</string>
+  <string>Hidden</string>
+  <string>Hidden</string>
+  <string>Hidden</string>
+  <string>Hidden</string>
   <string>Hidden</string>
   <string>Hidden</string>
 </ArrayOfString>")]

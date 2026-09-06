@@ -2,6 +2,15 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="DS3ConnectionInfo" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
+    <Setting Name="OverlayColumnColors" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)">&lt;ArrayOfString /&gt;</Value>
+    </Setting>
+    <Setting Name="SessionColumnOrder" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)">&lt;ArrayOfString /&gt;</Value>
+    </Setting>
+    <Setting Name="UILanguage" Type="System.String" Scope="User">
+      <Value Profile="(Default)">zh-CN</Value>
+    </Setting>
     <Setting Name="UsePingFilter" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
@@ -100,6 +109,15 @@
   &lt;string&gt;The standard deviation of the player's ping over the last 10 samples. A high value indicates an unstable connection. Displayed in milliseconds.&lt;/string&gt;
   &lt;string&gt;The ratio of late vs. on time STUN reply packets from the player, as a percentage. Another indicator of connection quality.&lt;/string&gt;
   &lt;string&gt;The state and country of the player, if available.&lt;/string&gt;
+  &lt;string&gt;等级：读取本地同步的角色数据。&lt;/string&gt;
+  &lt;string&gt;生命力：读取本地同步的角色数据。&lt;/string&gt;
+  &lt;string&gt;集中力：读取本地同步的角色数据。&lt;/string&gt;
+  &lt;string&gt;持久力：读取本地同步的角色数据。&lt;/string&gt;
+  &lt;string&gt;力量：读取本地同步的角色数据。&lt;/string&gt;
+  &lt;string&gt;敏捷：读取本地同步的角色数据。&lt;/string&gt;
+  &lt;string&gt;智力：读取本地同步的角色数据。&lt;/string&gt;
+  &lt;string&gt;信仰：读取本地同步的角色数据。&lt;/string&gt;
+  &lt;string&gt;角色当前血量 / 当前有效最大生命值；未加载时显示 —。&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
     </Setting>
     <Setting Name="SessColumnVisibility" Type="System.Collections.Specialized.StringCollection" Scope="User">
@@ -116,6 +134,15 @@
   &lt;string&gt;Visible&lt;/string&gt;
   &lt;string&gt;Hidden&lt;/string&gt;
   &lt;string&gt;Visible&lt;/string&gt;
+  &lt;string&gt;Hidden&lt;/string&gt;
+  &lt;string&gt;Hidden&lt;/string&gt;
+  &lt;string&gt;Hidden&lt;/string&gt;
+  &lt;string&gt;Hidden&lt;/string&gt;
+  &lt;string&gt;Hidden&lt;/string&gt;
+  &lt;string&gt;Hidden&lt;/string&gt;
+  &lt;string&gt;Hidden&lt;/string&gt;
+  &lt;string&gt;Hidden&lt;/string&gt;
+  &lt;string&gt;Hidden&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
     </Setting>
     <Setting Name="OverlayColVisibility" Type="System.Collections.Specialized.StringCollection" Scope="User">
@@ -130,6 +157,15 @@
   &lt;string&gt;Visible&lt;/string&gt;
   &lt;string&gt;Hidden&lt;/string&gt;
   &lt;string&gt;Visible&lt;/string&gt;
+  &lt;string&gt;Hidden&lt;/string&gt;
+  &lt;string&gt;Hidden&lt;/string&gt;
+  &lt;string&gt;Hidden&lt;/string&gt;
+  &lt;string&gt;Hidden&lt;/string&gt;
+  &lt;string&gt;Hidden&lt;/string&gt;
+  &lt;string&gt;Hidden&lt;/string&gt;
+  &lt;string&gt;Hidden&lt;/string&gt;
+  &lt;string&gt;Hidden&lt;/string&gt;
+  &lt;string&gt;Hidden&lt;/string&gt;
   &lt;string&gt;Hidden&lt;/string&gt;
   &lt;string&gt;Hidden&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>

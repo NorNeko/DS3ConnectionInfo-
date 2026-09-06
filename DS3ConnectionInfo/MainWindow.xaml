@@ -7,76 +7,102 @@
         xmlns:local="clr-namespace:DS3ConnectionInfo"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="DS3 Connection Info [VERSION]" Width="800" Height="450">
+        Title="DS3 Connection Info" Width="960" Height="620" MinWidth="760" MinHeight="450">
     <mah:MetroWindow.RightWindowCommands>
         <mah:WindowCommands>
-            <TextBlock VerticalAlignment="Center" Margin="0 0 10 0">           
-                <Hyperlink NavigateUri="" RequestNavigate="webLink_RequestNavigate" Name="linkUpdate">
-                    <TextBlock FontWeight="Bold" Name="textUpdate"></TextBlock>
-                </Hyperlink>
-            </TextBlock>
             <Label VerticalAlignment="Center">
                 <TextBlock>
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Text" Value="PING FILTER: OFF"></Setter>
-                            <Setter Property="Foreground" Value="Orange"></Setter>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Source={x:Static local:Settings.Default}, Path=UsePingFilter}" Value="True">
-                                    <Setter Property="Text">
-                                        <Setter.Value>
-                                            <MultiBinding StringFormat="PING FILTER: {0}/{1}">
-                                                <Binding Source="{x:Static local:Settings.Default}" Path="MaxAvgPing"></Binding>
-                                                <Binding Source="{x:Static local:Settings.Default}" Path="MaxAbsPing"></Binding>
-                                            </MultiBinding>
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Setter Property="Foreground" Value="LawnGreen"></Setter>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
+                    <TextBlock.Text><Binding Path="PingStatus" Source="{x:Static local:UiText.Current}" /></TextBlock.Text>
+                    <TextBlock.Style><Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="Orange" />
+                        <Style.Triggers><DataTrigger Binding="{Binding Source={x:Static local:Settings.Default}, Path=UsePingFilter}" Value="True">
+                            <Setter Property="Foreground" Value="LawnGreen" />
+                        </DataTrigger></Style.Triggers>
+                    </Style></TextBlock.Style>
                 </TextBlock>
             </Label>
-            <Label Content="DS3: CLOSED" Foreground="Orange" VerticalAlignment="Center" Name="labelGameState"></Label>
+            <Label Content="{Binding [Closed], Source={x:Static local:UiText.Current}, Mode=OneWay}" Foreground="Orange" VerticalAlignment="Center" Name="labelGameState"></Label>
         </mah:WindowCommands>
     </mah:MetroWindow.RightWindowCommands>
     <mah:MetroWindow.Resources>
+        <local:ColorLabelConverter x:Key="ColorLabelConverter" />
+        <Style TargetType="{x:Type mah:ColorPicker}">
+            <Setter Property="SelectedColorTemplate">
+                <Setter.Value><DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Rectangle Width="16" Height="16" Margin="0 0 5 0" Stroke="Gray">
+                            <Rectangle.Fill><SolidColorBrush Color="{Binding SelectedColor, RelativeSource={RelativeSource AncestorType={x:Type mah:ColorPicker}}}" /></Rectangle.Fill>
+                        </Rectangle>
+                        <TextBlock VerticalAlignment="Center">
+                            <TextBlock.Text><MultiBinding Converter="{StaticResource ColorLabelConverter}">
+                                <Binding Path="SelectedColor" RelativeSource="{RelativeSource AncestorType={x:Type mah:ColorPicker}}" />
+                                <Binding Path="ColorNames" Source="{x:Static local:UiText.Current}" />
+                            </MultiBinding></TextBlock.Text>
+                        </TextBlock>
+                    </StackPanel>
+                </DataTemplate></Setter.Value>
+            </Setter>
+            <Setter Property="local:UiText.PaletteNames" Value="{Binding ColorNames, Source={x:Static local:UiText.Current}}" />
+            <Setter Property="AvailableColorPaletteHeader" Value="{Binding [AvailableColors], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+            <Setter Property="StandardColorPaletteHeader" Value="{Binding [StandardColors], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+            <Setter Property="RecentColorPaletteHeader" Value="{Binding [RecentColors], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+            <Setter Property="CustomColorPalette01Header" Value="{Binding [CustomColors], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+            <Setter Property="CustomColorPalette02Header" Value="{Binding [CustomColors], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+            <Setter Property="ColorPalettesTabHeader" Value="{Binding [Palettes], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+            <Setter Property="AdvancedTabHeader" Value="{Binding [Advanced], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+            <Setter Property="LabelAlphaChannel" Value="{Binding [Alpha], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+            <Setter Property="LabelRedChannel" Value="{Binding [Red], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+            <Setter Property="LabelGreenChannel" Value="{Binding [Green], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+            <Setter Property="LabelBlueChannel" Value="{Binding [Blue], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+            <Setter Property="LabelHueChannel" Value="{Binding [Hue], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+            <Setter Property="LabelSaturationChannel" Value="{Binding [Saturation], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+            <Setter Property="LabelValueChannel" Value="{Binding [Value], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+            <Setter Property="LabelColorName" Value="{Binding [ColorName], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+            <Setter Property="LabelColorPreview" Value="{Binding [Preview], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+        </Style>
         <local:HotkeyConverter x:Key="HotkeyConverter" />
         <Style x:Key="textCenter" TargetType="{x:Type TextBlock}">
             <Setter Property="TextAlignment" Value="Center"></Setter>
         </Style>
     </mah:MetroWindow.Resources>
     <Grid>
-        <mah:MetroTabControl Name="tabCtrl">
-            <mah:MetroTabItem Header="Session Info" IsEnabled="True">
-                <DataGrid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Name="dataGridSession" ItemsSource="{Binding}" AutoGenerateColumns="False">
+        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10 4">
+            <Label Content="{Binding [Language], Source={x:Static local:UiText.Current}, Mode=OneWay}" VerticalAlignment="Center" />
+            <ComboBox Name="cbLanguage" Width="145" SelectionChanged="Language_SelectionChanged">
+                <ComboBoxItem Tag="zh-CN" Content="中文" />
+                <ComboBoxItem Tag="en" Content="English" />
+            </ComboBox>
+        </StackPanel>
+        <mah:MetroTabControl Grid.Row="1" Name="tabCtrl">
+            <mah:MetroTabItem Header="{Binding [Session], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsEnabled="True">
+                <DataGrid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Name="dataGridSession" CanUserReorderColumns="True" ColumnReordered="SessionColumnReordered" ItemsSource="{Binding}" AutoGenerateColumns="False">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Slot" IsReadOnly="True" Binding="{Binding CharSlot}" SortDirection="Ascending" ElementStyle="{StaticResource textCenter}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Char. Name" IsReadOnly="True" Binding="{Binding CharName}"></DataGridTextColumn>
-						<DataGridTextColumn Header="Team" IsReadOnly="True" Binding="{Binding TeamName}">
+                        <DataGridTextColumn Header="{Binding [Slot], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsReadOnly="True" Binding="{Binding CharSlot}" SortDirection="Ascending" ElementStyle="{StaticResource textCenter}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="{Binding [Character], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsReadOnly="True" Binding="{Binding CharName}"></DataGridTextColumn>
+						<DataGridTextColumn Header="{Binding [Team], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsReadOnly="True" Binding="{Binding TeamName}">
 							<DataGridTextColumn.ElementStyle>
 								<Style TargetType="{x:Type TextBlock}">
 									<Setter Property="Foreground" Value="{Binding TeamColor}"></Setter>
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
-						<DataGridTextColumn Header="Steam Name" IsReadOnly="True" Binding="{Binding SteamName}">
+						<DataGridTextColumn Header="{Binding [SteamName], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsReadOnly="True" Binding="{Binding SteamName}">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="{x:Type TextBlock}">
                                     <Setter Property="Foreground" Value="{Binding SteamNameColor}"></Setter>
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Header="Overlay Name" IsReadOnly="True" Binding="{Binding OverlayName}">
+                        <DataGridTextColumn Header="{Binding [OverlayName], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsReadOnly="True" Binding="{Binding OverlayName}">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="{x:Type TextBlock}">
                                     <Setter Property="Foreground" Value="{Binding SteamNameColor}"></Setter>
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Header="Steam ID 64" IsReadOnly="True" Binding="{Binding SteamId64}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Ping" IsReadOnly="True" Binding="{Binding Ping, StringFormat=N0}">
+                        <DataGridTextColumn Header="{Binding [SteamId], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsReadOnly="True" Binding="{Binding SteamId64}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="{Binding [Ping], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsReadOnly="True" Binding="{Binding Ping, StringFormat=N0}">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="{x:Type TextBlock}">
                                     <Setter Property="Foreground" Value="{Binding PingColor}"></Setter>
@@ -84,7 +110,7 @@
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Header="Avg. Ping" IsReadOnly="True" Binding="{Binding AveragePing, StringFormat=N0}">
+                        <DataGridTextColumn Header="{Binding [AvgPing], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsReadOnly="True" Binding="{Binding AveragePing, StringFormat=N0}">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="{x:Type TextBlock}">
                                     <Setter Property="Foreground" Value="{Binding PingColor}"></Setter>
@@ -92,20 +118,29 @@
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Header="Jitter" IsReadOnly="True" Binding="{Binding Jitter, StringFormat=N1}" ElementStyle="{StaticResource textCenter}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Late Packet %" IsReadOnly="True" Binding="{Binding LatePacketRatio, StringFormat=N1}" ElementStyle="{StaticResource textCenter}"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Location" IsReadOnly="True" Binding="{Binding Region}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="{Binding [Jitter], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsReadOnly="True" Binding="{Binding Jitter, StringFormat=N1}" ElementStyle="{StaticResource textCenter}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="{Binding [LatePackets], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsReadOnly="True" Binding="{Binding LatePacketRatio, StringFormat=N1}" ElementStyle="{StaticResource textCenter}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="{Binding [Location], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsReadOnly="True" Binding="{Binding Region}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="{Binding [Level], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsReadOnly="True" Binding="{Binding Level, TargetNullValue=—}" ElementStyle="{StaticResource textCenter}" />
+                        <DataGridTextColumn Header="{Binding [Vigor], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsReadOnly="True" Binding="{Binding Vigor, TargetNullValue=—}" ElementStyle="{StaticResource textCenter}" />
+                        <DataGridTextColumn Header="{Binding [Attunement], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsReadOnly="True" Binding="{Binding Attunement, TargetNullValue=—}" ElementStyle="{StaticResource textCenter}" />
+                        <DataGridTextColumn Header="{Binding [Endurance], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsReadOnly="True" Binding="{Binding Endurance, TargetNullValue=—}" ElementStyle="{StaticResource textCenter}" />
+                        <DataGridTextColumn Header="{Binding [Strength], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsReadOnly="True" Binding="{Binding Strength, TargetNullValue=—}" ElementStyle="{StaticResource textCenter}" />
+                        <DataGridTextColumn Header="{Binding [Dexterity], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsReadOnly="True" Binding="{Binding Dexterity, TargetNullValue=—}" ElementStyle="{StaticResource textCenter}" />
+                        <DataGridTextColumn Header="{Binding [Intelligence], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsReadOnly="True" Binding="{Binding Intelligence, TargetNullValue=—}" ElementStyle="{StaticResource textCenter}" />
+                        <DataGridTextColumn Header="{Binding [Faith], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsReadOnly="True" Binding="{Binding Faith, TargetNullValue=—}" ElementStyle="{StaticResource textCenter}" />
+                        <DataGridTextColumn Header="{Binding [Health], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsReadOnly="True" Binding="{Binding Health, TargetNullValue=—}" ElementStyle="{StaticResource textCenter}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </mah:MetroTabItem>
-            <mah:MetroTabItem Header="Settings" IsEnabled="True">
+            <mah:MetroTabItem Header="{Binding [Settings], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsEnabled="True">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                 <StackPanel Margin="10">
-                    <Label FontWeight="Bold" Content="WARNING: This ping filter is very crude, and WILL increase the time it takes to find online activity."/>
+                    <Label><TextBlock FontWeight="Bold" TextWrapping="Wrap" Text="{Binding [FilterWarning], Source={x:Static local:UiText.Current}, Mode=OneWay}" /></Label>
                     <Label>
-                        <TextBlock>When the ping filter is on, invasions and red/white summon signs will cancel and auto reset
-                        <LineBreak/>if the average and/or per player ping is too high. For more info, read the FAQ on the
-                        <Hyperlink NavigateUri="https://github.com/tremwil/DS3ConnectionInfo" RequestNavigate="webLink_RequestNavigate">
-                            Github page</Hyperlink>.
+                        <TextBlock TextWrapping="Wrap">
+                            <Run Text="{Binding [FilterHelp], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                            <Hyperlink NavigateUri="https://github.com/tremwil/DS3ConnectionInfo" RequestNavigate="webLink_RequestNavigate"><Run Text="{Binding [Github], Source={x:Static local:UiText.Current}, Mode=OneWay}" /></Hyperlink>
                         </TextBlock>
                     </Label>
                     <StackPanel Orientation="Horizontal">
@@ -136,27 +171,27 @@
                                 <RowDefinition Height="auto"></RowDefinition>
                                 <RowDefinition Height="5"></RowDefinition>
                             </Grid.RowDefinitions>
-                            <Label Content="Ping Filter" Grid.Row="0" Grid.Column="0"></Label>
+                            <Label Content="{Binding [PingFilter], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="0" Grid.Column="0"></Label>
                             <mah:ToggleSwitch Grid.Row="0" Grid.Column="1" IsOn="{Binding Source={x:Static local:Settings.Default}, Path=UsePingFilter}" 
-                                          OnContent="Enabled" OffContent="Disabled" Name="swPingFilter"></mah:ToggleSwitch>
-                            <Label Content="Ping Filter Hotkey" Grid.Row="2" Grid.Column="0"></Label>
+                                          OnContent="{Binding [Enabled], Source={x:Static local:UiText.Current}, Mode=OneWay}" OffContent="{Binding [Disabled], Source={x:Static local:UiText.Current}, Mode=OneWay}" Name="swPingFilter"></mah:ToggleSwitch>
+                            <Label Content="{Binding [FilterHotkey], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="2" Grid.Column="0"></Label>
                             <mah:HotKeyBox Grid.Row="2" Grid.Column="1" HotKey="{Binding Source={x:Static local:Settings.Default}, Path=PingFilterHotkey, Converter={StaticResource HotkeyConverter}}"/>
-                            <Label Content="Max Average Ping" Grid.Row="4" Grid.Column="0"></Label>
+                            <Label Content="{Binding [MaxAverage], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="4" Grid.Column="0"></Label>
                             <mah:NumericUpDown Grid.Row="4" Grid.Column="1" Value="{Binding Source={x:Static local:Settings.Default}, Path=MaxAvgPing}" 
                                            Minimum="0" Interval="10" ParsingNumberStyle="Number"/>
-                            <Label Content="Max Absolute Ping" Grid.Row="6" Grid.Column="0"></Label>
+                            <Label Content="{Binding [MaxAbsolute], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="6" Grid.Column="0"></Label>
                             <mah:NumericUpDown Grid.Row="6" Grid.Column="1" Value="{Binding Source={x:Static local:Settings.Default}, Path=MaxAbsPing}" 
                                            Minimum="0" Interval="10" ParsingNumberStyle="Number"/>
-                            <Label Grid.Row="8" Grid.Column="0" Content="Filter Delay (s)"></Label>
+                            <Label Grid.Row="8" Grid.Column="0" Content="{Binding [Delay], Source={x:Static local:UiText.Current}, Mode=OneWay}"></Label>
                             <mah:NumericUpDown Grid.Row="8" Grid.Column="1" Value="{Binding Source={x:Static local:Settings.Default}, Path=SamplingDelay}"
                                            Minimum="0" Maximum="10" Interval="1" ParsingNumberStyle="Float"/>
-                            <Label Content="REO Hotkey" Grid.Row="10" Grid.Column="0"></Label>
+                            <Label Content="{Binding [REO], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="10" Grid.Column="0"></Label>
                             <mah:HotKeyBox Grid.Row="10" Grid.Column="1" HotKey="{Binding Source={x:Static local:Settings.Default}, Path=REOHotkey, Converter={StaticResource HotkeyConverter}}"/>
-                            <Label Content="RSD Hotkey " Grid.Row="12" Grid.Column="0"></Label>
+                            <Label Content="{Binding [RSD], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="12" Grid.Column="0"></Label>
                             <mah:HotKeyBox Grid.Row="12" Grid.Column="1" HotKey="{Binding Source={x:Static local:Settings.Default}, Path=RSDHotkey, Converter={StaticResource HotkeyConverter}}"/>
-                            <Label Content="WSD Hotkey " Grid.Row="14" Grid.Column="0"></Label>
+                            <Label Content="{Binding [WSD], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="14" Grid.Column="0"></Label>
                             <mah:HotKeyBox Grid.Row="14" Grid.Column="1" HotKey="{Binding Source={x:Static local:Settings.Default}, Path=WSDHotkey, Converter={StaticResource HotkeyConverter}}"/>
-                            <Label Content="Leave Session Hotkey" Grid.Row="16" Grid.Column="0"></Label>
+                            <Label Content="{Binding [Leave], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="16" Grid.Column="0"></Label>
                             <mah:HotKeyBox Grid.Row="16" Grid.Column="1" HotKey="{Binding Source={x:Static local:Settings.Default}, Path=LeaveSessionHotkey, Converter={StaticResource HotkeyConverter}}"/>
                             <!--<Label Grid.Row="16" Grid.Column="0" Content="Sampling Period (s)"></Label>
                             <mah:NumericUpDown Grid.Row="16" Grid.Column="1" Value="{Binding Source={x:Static local:Settings.Default}, Path=SamplingPeriod}" 
@@ -178,39 +213,50 @@
                                 <RowDefinition Height="*"></RowDefinition>
                             </Grid.RowDefinitions>
 
-                            <Label Content="REO Hotkey Effect" Grid.Row="0" Grid.Column="0"></Label>
+                            <Label Content="{Binding [REOMode], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="0" Grid.Column="0"></Label>
                             <mah:ToggleSwitch Grid.Row="0" Margin="10 0" Grid.Column="1" IsOn="{Binding Source={x:Static local:Settings.Default}, Path=SpamRedEyeOrb}" 
-                                          OnContent="Spam" OffContent="Normal"></mah:ToggleSwitch>
-                            <Label Content="Enable Hotkeys" Grid.Row="2" Grid.Column="0"></Label>
+                                          OnContent="{Binding [Spam], Source={x:Static local:UiText.Current}, Mode=OneWay}" OffContent="{Binding [Normal], Source={x:Static local:UiText.Current}, Mode=OneWay}"></mah:ToggleSwitch>
+                            <Label Content="{Binding [Hotkeys], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="2" Grid.Column="0"></Label>
                             <mah:ToggleSwitch Grid.Row="2" Margin="10 0" Grid.Column="1" IsOn="{Binding Source={x:Static local:Settings.Default}, Path=UseHotkeys}" Name="swToggleHotkeys"
-                                          OnContent="Yes" OffContent="No" ToolTip="Enable/disable the hotkey system." Toggled="swToggleHotkeys_Toggled"></mah:ToggleSwitch>
+                                          OnContent="{Binding [Yes], Source={x:Static local:UiText.Current}, Mode=OneWay}" OffContent="{Binding [No], Source={x:Static local:UiText.Current}, Mode=OneWay}" ToolTip="{Binding [HotkeysTip], Source={x:Static local:UiText.Current}, Mode=OneWay}" Toggled="swToggleHotkeys_Toggled"></mah:ToggleSwitch>
                             
-                            <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" FontWeight="Bold">Show/Hide Session Info Columns:</Label>
+                            <Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" FontWeight="Bold" Content="{Binding [SessionColumns], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
                             <ComboBox Grid.Row="5" Grid.Column="0" SelectedIndex="0" Name="cbColName" SelectionChanged="cbColName_SelectionChanged">
-                                <ComboBoxItem>Slot</ComboBoxItem>
-                                <ComboBoxItem>Char. Name</ComboBoxItem>
-                                <ComboBoxItem>Team</ComboBoxItem>
-                                <ComboBoxItem>Steam Name</ComboBoxItem>
-                                <ComboBoxItem>Overlay Name</ComboBoxItem>
-                                <ComboBoxItem>Steam ID 64</ComboBoxItem>
-                                <ComboBoxItem>Ping</ComboBoxItem>
-                                <ComboBoxItem>Average Ping</ComboBoxItem>
-                                <ComboBoxItem>Jitter</ComboBoxItem>
-                                <ComboBoxItem>Late Packet %</ComboBoxItem>
-                                <ComboBoxItem>Location</ComboBoxItem>
+                                <ComboBoxItem Content="{Binding [Slot], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Character], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Team], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [SteamName], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [OverlayName], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [SteamId], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Ping], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [AveragePing], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Jitter], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [LatePackets], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Location], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Level], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Vigor], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Attunement], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Endurance], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Strength], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Dexterity], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Intelligence], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Faith], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Health], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
                             </ComboBox>
-                            <mah:ToggleSwitch Margin="10 0" Grid.Row="5" Grid.Column="1" IsOn="True" OnContent="Shown" OffContent="Hidden" Name="swColVisible" Toggled="swColVisible_Toggled"></mah:ToggleSwitch>
+                            <mah:ToggleSwitch Margin="10 0" Grid.Row="5" Grid.Column="1" IsOn="True" OnContent="{Binding [Shown], Source={x:Static local:UiText.Current}, Mode=OneWay}" OffContent="{Binding [Hidden], Source={x:Static local:UiText.Current}, Mode=OneWay}" Name="swColVisible" Toggled="swColVisible_Toggled"></mah:ToggleSwitch>
                             <Label Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Width="{Binding ElementName=gridSessInfoSettings, Path=ActualWidth}">
-                                <TextBlock TextWrapping="Wrap" Name="textColDesc" FontStyle="Italic">DESC</TextBlock>
+                                <TextBlock TextWrapping="Wrap" Name="textColDesc" FontStyle="Italic"></TextBlock>
                             </Label>
                             <DockPanel Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" LastChildFill="False" Margin="0 5" HorizontalAlignment="Left">
-                                <Button DockPanel.Dock="Bottom" Name="btnResetSettings" Click="btnResetSettings_Click" Height="40" FontSize="14" Width="200">Reset All Settings</Button>
+                                <Button DockPanel.Dock="Bottom" Name="btnResetSettings" Click="btnResetSettings_Click" Height="40" FontSize="14" Width="200" Content="{Binding [Reset], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
                             </DockPanel>
                         </Grid>
                     </StackPanel>
                 </StackPanel>
+                            </ScrollViewer>
             </mah:MetroTabItem>
-            <mah:MetroTabItem Header="Overlay" IsEnabled="True">
+            <mah:MetroTabItem Header="{Binding [Overlay], Source={x:Static local:UiText.Current}, Mode=OneWay}" IsEnabled="True">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                 <StackPanel Orientation="Horizontal">
                     <Grid Margin="10">
                         <Grid.ColumnDefinitions>
@@ -240,36 +286,36 @@
                             <RowDefinition Height="5"></RowDefinition>
                             <RowDefinition Height="auto"></RowDefinition>
                         </Grid.RowDefinitions>
-                        <Label VerticalAlignment="Center" Content="Display Overlay" Grid.Row="0" Grid.Column="0"></Label>
-                        <mah:ToggleSwitch Grid.Row="0" Grid.Column="1" IsOn="{Binding Source={x:Static local:Settings.Default}, Path=DisplayOverlay}" OnContent="Yes" OffContent="No" Name="swOverlay" Toggled="swOverlay_Toggled"></mah:ToggleSwitch>
-                        <Label VerticalAlignment="Center" Content="Overlay Hotkey" Grid.Row="2" Grid.Column="0"></Label>
+                        <Label VerticalAlignment="Center" Content="{Binding [DisplayOverlay], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="0" Grid.Column="0"></Label>
+                        <mah:ToggleSwitch Grid.Row="0" Grid.Column="1" IsOn="{Binding Source={x:Static local:Settings.Default}, Path=DisplayOverlay}" OnContent="{Binding [Yes], Source={x:Static local:UiText.Current}, Mode=OneWay}" OffContent="{Binding [No], Source={x:Static local:UiText.Current}, Mode=OneWay}" Name="swOverlay" Toggled="swOverlay_Toggled"></mah:ToggleSwitch>
+                        <Label VerticalAlignment="Center" Content="{Binding [OverlayHotkey], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="2" Grid.Column="0"></Label>
                         <mah:HotKeyBox Grid.Row="2" Grid.Column="1" Name="hotkeyOverlay"
                                        HotKey="{Binding Source={x:Static local:Settings.Default}, Path=OverlayHotkey, Converter={StaticResource HotkeyConverter}}"/>
-                        <Label VerticalAlignment="Center" Content="Borderless DS3" Grid.Row="4" Grid.Column="0"></Label>
-                        <mah:ToggleSwitch Grid.Row="4" Grid.Column="1" IsOn="{Binding Source={x:Static local:Settings.Default}, Path=BorderlessMode}" OnContent="Yes" OffContent="No" Name="swBorderless" Toggled="swBorderless_Toggled"></mah:ToggleSwitch>
-                        <Label VerticalAlignment="Center" Content="Borderless Hotkey" Grid.Row="6" Grid.Column="0"></Label>
+                        <Label VerticalAlignment="Center" Content="{Binding [Borderless], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="4" Grid.Column="0"></Label>
+                        <mah:ToggleSwitch Grid.Row="4" Grid.Column="1" IsOn="{Binding Source={x:Static local:Settings.Default}, Path=BorderlessMode}" OnContent="{Binding [Yes], Source={x:Static local:UiText.Current}, Mode=OneWay}" OffContent="{Binding [No], Source={x:Static local:UiText.Current}, Mode=OneWay}" Name="swBorderless" Toggled="swBorderless_Toggled"></mah:ToggleSwitch>
+                        <Label VerticalAlignment="Center" Content="{Binding [BorderlessHotkey], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="6" Grid.Column="0"></Label>
                         <mah:HotKeyBox Grid.Row="6" Grid.Column="1" Name="hotkeyBorderless"
                                        HotKey="{Binding Source={x:Static local:Settings.Default}, Path=BorderlessHotkey, Converter={StaticResource HotkeyConverter}}"/>
-                        <Label VerticalAlignment="Center" Content="Overlay Anchor" Grid.Row="8" Grid.Column="0"></Label>
+                        <Label VerticalAlignment="Center" Content="{Binding [Anchor], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="8" Grid.Column="0"></Label>
                         <ComboBox Grid.Row="8" Grid.Column="1" SelectedIndex="{Binding Source={x:Static local:Settings.Default}, Path=OverlayAnchor}">
-                            <ComboBoxItem>Top Right</ComboBoxItem>
-                            <ComboBoxItem>Top Left</ComboBoxItem>
-                            <ComboBoxItem>Bottom Right</ComboBoxItem>
-                            <ComboBoxItem>Bottom Left</ComboBoxItem>
+                            <ComboBoxItem Content="{Binding [TopRight], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                            <ComboBoxItem Content="{Binding [TopLeft], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                            <ComboBoxItem Content="{Binding [BottomRight], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                            <ComboBoxItem Content="{Binding [BottomLeft], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
                         </ComboBox>
-                        <Label VerticalAlignment="Center" Content="Overlay X Offset" Grid.Row="10" Grid.Column="0"></Label>
+                        <Label VerticalAlignment="Center" Content="{Binding [XOffset], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="10" Grid.Column="0"></Label>
                         <mah:NumericUpDown Grid.Row="10" Grid.Column="1" Value="{Binding Source={x:Static local:Settings.Default}, Path=XOffset}" 
                                            Minimum="0" Maximum="1" Interval="0.005" ParsingNumberStyle="Float" StringFormat="F3"/>
-                        <Label VerticalAlignment="Center" Content="Overlay Y Offset" Grid.Row="12" Grid.Column="0"></Label>
+                        <Label VerticalAlignment="Center" Content="{Binding [YOffset], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="12" Grid.Column="0"></Label>
                         <mah:NumericUpDown Grid.Row="12" Grid.Column="1" Value="{Binding Source={x:Static local:Settings.Default}, Path=YOffset}"  
                                            Minimum="0" Maximum="1" Interval="0.005" ParsingNumberStyle="Float" StringFormat="F3"></mah:NumericUpDown>
-                        <Label VerticalAlignment="Center" Content="Overlay Font: " Grid.Row="14" Grid.Column="0"></Label>
+                        <Label VerticalAlignment="Center" Content="{Binding [Font], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="14" Grid.Column="0"></Label>
                         <Button Grid.Row="14" Grid.Column="1" Content="{Binding Source={x:Static local:Settings.Default}, Path=OverlayFont}" Name="btnFont" Click="btnFont_Click" ></Button>
-                        <Label VerticalAlignment="Center" Content="Name Format" Grid.Row="16" Grid.Column="0"></Label>
+                        <Label VerticalAlignment="Center" Content="{Binding [NameFormat], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="16" Grid.Column="0"></Label>
                         <TextBox Grid.Row="16" Grid.Column="1" FontFamily="Consolas" Text="{Binding Source={x:Static local:Settings.Default}, Path=NameFormat, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                        <Label VerticalAlignment="Center" Content="N.F. (Connecting)" Grid.Row="18" Grid.Column="0"></Label>
+                        <Label VerticalAlignment="Center" Content="{Binding [ConnectingFormat], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="18" Grid.Column="0"></Label>
                         <TextBox Grid.Row="18" Grid.Column="1" FontFamily="Consolas" Text="{Binding Source={x:Static local:Settings.Default}, Path=NameFormatConnecting, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                        <Label VerticalAlignment="Center" Content="Stroke Thickness" Grid.Row="20" Grid.Column="0"></Label>
+                        <Label VerticalAlignment="Center" Content="{Binding [Stroke], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="20" Grid.Column="0"></Label>
                         <mah:NumericUpDown Grid.Row="20" Grid.Column="1" Value="{Binding Source={x:Static local:Settings.Default}, Path=OutlineThickness}"  
                                            Minimum="0" Interval="0.5" ParsingNumberStyle="Float" StringFormat="F1"></mah:NumericUpDown>
                     </Grid>
@@ -300,46 +346,64 @@
                             <RowDefinition Height="auto"></RowDefinition>
                             <RowDefinition Height="auto"></RowDefinition>
                         </Grid.RowDefinitions>
-                        <Label VerticalAlignment="Center" Content="Text Color" Grid.Row="0" Grid.Column="0"></Label>
+                        <Label VerticalAlignment="Center" Content="{Binding [TextColor], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="0" Grid.Column="0"></Label>
                         <mah:ColorPicker Grid.Row="0" Grid.Column="1" SelectedColor="{Binding Source={x:Static local:Settings.Default}, Path=TextColor}"></mah:ColorPicker>
-                        <Label VerticalAlignment="Center" Content="Stroke Color" Grid.Row="2" Grid.Column="0"></Label>
+                        <Label VerticalAlignment="Center" Content="{Binding [StrokeColor], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="2" Grid.Column="0"></Label>
                         <mah:ColorPicker Grid.Row="2" Grid.Column="1" SelectedColor="{Binding Source={x:Static local:Settings.Default}, Path=OutlineColor}"></mah:ColorPicker>
-                        <Label VerticalAlignment="Center" Content="Connecting Color" Grid.Row="4" Grid.Column="0"></Label>
+                        <Label VerticalAlignment="Center" Content="{Binding [ConnectingColor], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="4" Grid.Column="0"></Label>
                         <mah:ColorPicker Grid.Row="4" Grid.Column="1" SelectedColor="{Binding Source={x:Static local:Settings.Default}, Path=ConnectingColor}"></mah:ColorPicker>
-                        <Label VerticalAlignment="Center" Content="Ping &lt;=50 Color" Grid.Row="6" Grid.Column="0"></Label>
+                        <Label VerticalAlignment="Center" Content="{Binding [Ping50], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="6" Grid.Column="0"></Label>
                         <mah:ColorPicker Grid.Row="6" Grid.Column="1" SelectedColor="{Binding Source={x:Static local:Settings.Default}, Path=PingColor1}"></mah:ColorPicker>
-                        <Label VerticalAlignment="Center" Content="Ping &lt;=100 Color" Grid.Row="8" Grid.Column="0"></Label>
+                        <Label VerticalAlignment="Center" Content="{Binding [Ping100], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="8" Grid.Column="0"></Label>
                         <mah:ColorPicker Grid.Row="8" Grid.Column="1" SelectedColor="{Binding Source={x:Static local:Settings.Default}, Path=PingColor2}"></mah:ColorPicker>
-                        <Label VerticalAlignment="Center" Content="Ping &lt;=200 Color" Grid.Row="10" Grid.Column="0"></Label>
+                        <Label VerticalAlignment="Center" Content="{Binding [Ping200], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="10" Grid.Column="0"></Label>
                         <mah:ColorPicker Grid.Row="10" Grid.Column="1" SelectedColor="{Binding Source={x:Static local:Settings.Default}, Path=PingColor3}"></mah:ColorPicker>
-                        <Label VerticalAlignment="Center" Content="Ping &gt;200 Color" Grid.Row="12" Grid.Column="0"></Label>
+                        <Label VerticalAlignment="Center" Content="{Binding [PingOver200], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="12" Grid.Column="0"></Label>
                         <mah:ColorPicker Grid.Row="12" Grid.Column="1" SelectedColor="{Binding Source={x:Static local:Settings.Default}, Path=PingColor4}"></mah:ColorPicker>
 
-                        <Label VerticalAlignment="Center" Content="Header Fmt. (Filter On)" Grid.Row="14" Grid.Column="0"
-                               ToolTip="Double click for more info on C# time format strings" MouseDoubleClick="headerFmt_MouseDoubleClick"></Label>
+                        <Label VerticalAlignment="Center" Content="{Binding [HeaderOn], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="14" Grid.Column="0"
+                               ToolTip="{Binding [TimeHelp], Source={x:Static local:UiText.Current}, Mode=OneWay}" MouseDoubleClick="headerFmt_MouseDoubleClick"></Label>
                         <TextBox Grid.Row="14" Grid.Column="1" FontFamily="Consolas" Text="{Binding Source={x:Static local:Settings.Default}, Path=HeaderFmtFilterOn, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                        <Label VerticalAlignment="Center" Content="Header Fmt. (Filter Off)" Grid.Row="16" Grid.Column="0"
-                               ToolTip="Double click for more info on C# time format strings" MouseDoubleClick="headerFmt_MouseDoubleClick"></Label>
+                        <Label VerticalAlignment="Center" Content="{Binding [HeaderOff], Source={x:Static local:UiText.Current}, Mode=OneWay}" Grid.Row="16" Grid.Column="0"
+                               ToolTip="{Binding [TimeHelp], Source={x:Static local:UiText.Current}, Mode=OneWay}" MouseDoubleClick="headerFmt_MouseDoubleClick"></Label>
                         <TextBox Grid.Row="16" Grid.Column="1" FontFamily="Consolas" Text="{Binding Source={x:Static local:Settings.Default}, Path=HeaderFmtFilterOff, UpdateSourceTrigger=PropertyChanged}"></TextBox>
 
                         <Label Grid.Row="18" Grid.Column="0" Grid.ColumnSpan="2" FontWeight="Bold" 
-                               ToolTip="To see a description of these values, see the Settings tab.">Show/Hide Overlay Columns:</Label>
+                               ToolTip="{Binding [ColumnHelp], Source={x:Static local:UiText.Current}, Mode=OneWay}" Content="{Binding [OverlayColumns], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
                         <ComboBox Grid.Row="19" Grid.Column="0" SelectedIndex="0" Name="cbOColName" SelectionChanged="cbOColName_SelectionChanged">
-                            <ComboBoxItem>Slot</ComboBoxItem>
-                            <ComboBoxItem>Char. Name</ComboBoxItem>
-                            <ComboBoxItem>Team</ComboBoxItem>
-                            <ComboBoxItem>Steam Name</ComboBoxItem>
-                            <ComboBoxItem>Overlay Name</ComboBoxItem>
-                            <ComboBoxItem>Steam ID 64</ComboBoxItem>
-                            <ComboBoxItem>Ping</ComboBoxItem>
-                            <ComboBoxItem>Average Ping</ComboBoxItem>
-                            <ComboBoxItem>Jitter</ComboBoxItem>
-                            <ComboBoxItem>Late Packet %</ComboBoxItem>
-                            <ComboBoxItem>Location</ComboBoxItem>
+                            <ComboBoxItem Content="{Binding [Slot], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                            <ComboBoxItem Content="{Binding [Character], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                            <ComboBoxItem Content="{Binding [Team], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                            <ComboBoxItem Content="{Binding [SteamName], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                            <ComboBoxItem Content="{Binding [OverlayName], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                            <ComboBoxItem Content="{Binding [SteamId], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                            <ComboBoxItem Content="{Binding [Ping], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                            <ComboBoxItem Content="{Binding [AveragePing], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                            <ComboBoxItem Content="{Binding [Jitter], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                            <ComboBoxItem Content="{Binding [LatePackets], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                            <ComboBoxItem Content="{Binding [Location], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Level], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Vigor], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Attunement], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Endurance], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Strength], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Dexterity], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Intelligence], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Faith], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
+                                <ComboBoxItem Content="{Binding [Health], Source={x:Static local:UiText.Current}, Mode=OneWay}" />
                         </ComboBox>
-                        <mah:ToggleSwitch Margin="10 0" Grid.Row="19" Grid.Column="1" IsOn="True" OnContent="Shown" OffContent="Hidden" Name="swOColVisible" Toggled="swOColVisible_Toggled"></mah:ToggleSwitch>
+                        <StackPanel Grid.Row="19" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <mah:ToggleSwitch Margin="10 0" IsOn="True" OnContent="{Binding [Shown], Source={x:Static local:UiText.Current}, Mode=OneWay}" OffContent="{Binding [Hidden], Source={x:Static local:UiText.Current}, Mode=OneWay}" Name="swOColVisible" Toggled="swOColVisible_Toggled"></mah:ToggleSwitch>
+                            <mah:ColorPicker Name="fieldColorPicker" Width="125" Margin="0 0 5 0"
+                                SelectedColorChanged="FieldColorChanged"
+                                ToolTip="{Binding [FieldColorHelp], Source={x:Static local:UiText.Current}}" />
+                            <Button Name="resetFieldColor" Padding="6 2" Click="ResetFieldColor"
+                                Content="{Binding [DefaultColor], Source={x:Static local:UiText.Current}}"
+                                ToolTip="{Binding [DefaultColorHelp], Source={x:Static local:UiText.Current}}" />
+                        </StackPanel>
                     </Grid>
                 </StackPanel>
+                            </ScrollViewer>
             </mah:MetroTabItem>
         </mah:MetroTabControl>
     </Grid>

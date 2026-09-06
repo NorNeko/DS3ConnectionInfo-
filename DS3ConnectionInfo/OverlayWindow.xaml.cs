@@ -35,9 +35,15 @@ namespace DS3ConnectionInfo
             headerUpdateTimer.Start();
         }
 
+        public void RefreshLanguage()
+        {
+            dataGrid.Items.Refresh();
+            UpdateHeaderText(this, EventArgs.Empty);
+        }
+
         public void UpdateHeaderText(object sender, EventArgs evt)
         {
-            header.Text = FormatUtils.NamedFormat(Settings.Default.UsePingFilter ? Settings.Default.HeaderFmtFilterOn : Settings.Default.HeaderFmtFilterOff,
+            header.Text = FormatUtils.NamedFormat(UiText.LocalizeHeader(Settings.Default.UsePingFilter ? Settings.Default.HeaderFmtFilterOn : Settings.Default.HeaderFmtFilterOff, Settings.Default.UsePingFilter, UiText.Current.Language),
                 new string[3] { "time", "avg", "abs" }, DateTime.Now, Settings.Default.MaxAvgPing, Settings.Default.MaxAbsPing);
 
             Dispatcher.BeginInvoke(DispatcherPriority.ContextIdle, new Action(UpdatePosition));
@@ -48,8 +54,9 @@ namespace DS3ConnectionInfo
             for (int i = 0; i < Settings.Default.OverlayColVisibility.Count; i++)
             {
                 string vis = Settings.Default.OverlayColVisibility[i];
-                dataGrid.Columns[i].Visibility = (Visibility)Enum.Parse(typeof(Visibility), vis);
+                dataGrid.Columns[i].Visibility = vis == "Visible" ? Visibility.Visible : Visibility.Collapsed;
             }
+            Dispatcher.BeginInvoke(DispatcherPriority.ContextIdle, new Action(UpdatePosition));
         }
         public void UpdateVisibility()
         {
@@ -123,9 +130,11 @@ namespace DS3ConnectionInfo
 
         public void UpdatePosition()
         {
+            if (!DS3Interop.Attached || !IsVisible) return;
             if (!isDragging)
             {
                 Rect wpfRect = GetDS3WPFRect();
+                if (wpfRect.IsEmpty) return;
 
                 Left = wpfRect.Left + ((Settings.Default.OverlayAnchor % 2 == 1) ? Settings.Default.XOffset * wpfRect.Width :
                         (1 - Settings.Default.XOffset) * wpfRect.Width - ActualWidth);
@@ -158,6 +167,7 @@ namespace DS3ConnectionInfo
 
         private void Window_Closed(object sender, EventArgs e)
         {
+            headerUpdateTimer.Stop();
             User32.UnhookWinEvent(hLocHook);
             User32.UnhookWinEvent(hFocusHook);
         }

@@ -22,35 +22,36 @@ namespace DS3ConnectionInfo
     
     public class Team
     {
-        public string Name { get; private set; }
+        private string name;
+        public string Name => UiText.Current[name];
         public TeamAllegiance Allegiance { get; private set; }
         public string Color => colors[Allegiance];
         
         private static readonly Dictionary<int, Team> teams = new Dictionary<int, Team>()
         {
-            {1,  new Team("Host",                                       TeamAllegiance.Host) },
-            {2,  new Team("Phantom",                                    TeamAllegiance.Host) },
-            {3,  new Team("Black Phantom",                              TeamAllegiance.Invader) },
-            {4,  new Team("Hollow",                                     TeamAllegiance.Host) },
-            {6,  new Team("Enemy",                                      TeamAllegiance.Enemy) },
-            {7,  new Team("Boss (giants, big lizard)",                  TeamAllegiance.Enemy) },
-            {8,  new Team("Friend",                                     TeamAllegiance.Host) },
-            {9,  new Team("AngryFriend",                                TeamAllegiance.Enemy) },
-            {10, new Team("DecoyEnemy",                                 TeamAllegiance.Enemy) },
-            {11, new Team("BloodChild",                                 TeamAllegiance.Unknown) },
-            {12, new Team("BattleFriend",                               TeamAllegiance.Unknown) },
-            {13, new Team("Dragon",                                     TeamAllegiance.Unknown) },
-            {16, new Team("Dark Spirit",                                TeamAllegiance.Invader) },
-            {17, new Team("Watchdog of Farron",                         TeamAllegiance.Defender) },
-            {18, new Team("Aldrich Faithful",                           TeamAllegiance.Defender) },
-            {24, new Team("Darkwraiths",                                TeamAllegiance.Unknown) },
-            {26, new Team("NPC",                                        TeamAllegiance.Unknown) },
-            {27, new Team("Hostile NPC",                                TeamAllegiance.Unknown) },
-            {29, new Team("Arena",                                      TeamAllegiance.Unknown) },
-            {31, new Team("Mad Phantom",                                TeamAllegiance.Mad) },
-            {32, new Team("Mad Spirit",                                 TeamAllegiance.Mad) },
-            {33, new Team("Giant crabs, Dragons from Lothric castle",   TeamAllegiance.Enemy) },
-            {0,  new Team("None",                                       TeamAllegiance.Unknown) }
+            {1,  new Team("Team0",                                       TeamAllegiance.Host) },
+            {2,  new Team("Team1",                                    TeamAllegiance.Host) },
+            {3,  new Team("Team2",                              TeamAllegiance.Invader) },
+            {4,  new Team("Team3",                                     TeamAllegiance.Host) },
+            {6,  new Team("Team4",                                      TeamAllegiance.Enemy) },
+            {7,  new Team("Team5",                  TeamAllegiance.Enemy) },
+            {8,  new Team("Team6",                                     TeamAllegiance.Host) },
+            {9,  new Team("Team7",                                TeamAllegiance.Enemy) },
+            {10, new Team("Team8",                                 TeamAllegiance.Enemy) },
+            {11, new Team("Team9",                                 TeamAllegiance.Unknown) },
+            {12, new Team("Team10",                               TeamAllegiance.Unknown) },
+            {13, new Team("Team11",                                     TeamAllegiance.Unknown) },
+            {16, new Team("Team12",                                TeamAllegiance.Invader) },
+            {17, new Team("Team13",                         TeamAllegiance.Defender) },
+            {18, new Team("Team14",                           TeamAllegiance.Defender) },
+            {24, new Team("Team15",                                TeamAllegiance.Unknown) },
+            {26, new Team("Team16",                                        TeamAllegiance.Unknown) },
+            {27, new Team("Team17",                                TeamAllegiance.Unknown) },
+            {29, new Team("Team18",                                      TeamAllegiance.Unknown) },
+            {31, new Team("Team19",                                TeamAllegiance.Mad) },
+            {32, new Team("Team20",                                 TeamAllegiance.Mad) },
+            {33, new Team("Team21",   TeamAllegiance.Enemy) },
+            {0,  new Team("Team22",                                       TeamAllegiance.Unknown) }
         };
         
         private static readonly Dictionary<TeamAllegiance, string> colors = new Dictionary<TeamAllegiance, string>()
@@ -66,7 +67,7 @@ namespace DS3ConnectionInfo
         
         private Team(string name, TeamAllegiance allegiance)
         {
-            Name = name;
+            this.name = name;
             Allegiance = allegiance;
         }
         

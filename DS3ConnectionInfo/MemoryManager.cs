@@ -49,7 +49,7 @@ namespace DS3ConnectionInfo
             bool s = Kernel32.ReadProcessMemory(pHandle, memaddress, buffer, nBytes, out numRead);
 
             // Unsuccessful read, we don't have access or the address is wrong
-            if (s && numRead != nBytes)
+            if (!s || numRead != nBytes)
                 throw new UnauthorizedAccessException("ReadProcessMemory Failed");
 
             // Everything went okay, so return
@@ -70,7 +70,7 @@ namespace DS3ConnectionInfo
             bool s = Kernel32.WriteProcessMemory(pHandle, memaddress, bytes, nBytes, out numWrite);
 
             // Unsuccessful write, we don't have access or the address is wrong
-            if (s && numWrite != nBytes)
+            if (!s || numWrite != nBytes)
                 throw new UnauthorizedAccessException("WriteProcessMemory Failed");
         }
 
@@ -146,7 +146,11 @@ namespace DS3ConnectionInfo
             {
                 // Iteratively update the current address by moving up the pointers chain
                 foreach (long offset in offsets)
-                    address = ReadInt64(pHandle, address) + offset;
+                {
+                    long pointer = ReadInt64(pHandle, address);
+                    if (pointer == 0) throw new UnauthorizedAccessException("Null pointer in memory chain");
+                    address = pointer + offset;
+                }
 
                 return address;
             }

@@ -14,7 +14,7 @@ namespace DS3ConnectionInfo
 {
     public class Player
     {
-        private const long baseB = 0x4768E78;
+
 
 
         private static Dictionary<CSteamID, Player> activePlayers = new Dictionary<CSteamID, Player>();
@@ -24,10 +24,22 @@ namespace DS3ConnectionInfo
         public CSteamID SteamID { get; private set; }
         public string SteamName { get; private set; }
         public ulong NetId { get; private set; }
-        public string Region { get; private set; }
+        private string region;
+        public string Region { get => region == "[STEAM RELAY]" ? UiText.Current["SteamRelay"] : region; private set => region = value; }
         public string CharSlot { get; private set; }
         public string CharName { get; private set; }
         public int TeamId { get; private set; }
+
+        public PlayerAttributes Attributes { get; private set; }
+        public int? Level => Attributes?.Level;
+        public int? Vigor => Attributes?.Vigor;
+        public int? Attunement => Attributes?.Attunement;
+        public int? Endurance => Attributes?.Endurance;
+        public int? Strength => Attributes?.Strength;
+        public int? Dexterity => Attributes?.Dexterity;
+        public int? Intelligence => Attributes?.Intelligence;
+        public int? Faith => Attributes?.Faith;
+        public string Health => Attributes?.Health ?? "—";
 
         public string TeamName => Team.GetTeamFromId(TeamId).Name;
         public TeamAllegiance TeamAlliegance => Team.GetTeamFromId(TeamId).Allegiance;
@@ -112,23 +124,36 @@ namespace DS3ConnectionInfo
 
         public static void UpdateInGameInfo()
         {
-            for (int slot = 0; slot < 5; slot++)
+            // Invalidate first: disconnected/unloaded/reused slots must never retain old values.
+            foreach (Player player in activePlayers.Values)
+            {
+                player.CharSlot = "";
+                player.CharName = "";
+                player.TeamId = -1;
+                player.Attributes = null;
+            }
+            for (int slot = 1; slot <= 5; slot++)
             {
                 try
                 {
-                    if (DS3Interop.GetPlayerBase(slot) == 0) continue;
-
+                    long character = DS3Interop.GetPlayerBase(slot);
+                    if (character == 0) continue;
                     CSteamID id = DS3Interop.GetTruePlayerSteamId(slot);
-                    if (!activePlayers.ContainsKey(id)) continue;
-
-                    activePlayers[id].CharSlot = slot.ToString();
-                    activePlayers[id].CharName = DS3Interop.GetPlayerName(slot);
-                    activePlayers[id].TeamId = DS3Interop.GetPlayerTeam(slot);
+                    if (!activePlayers.TryGetValue(id, out Player player)) continue;
+                    string name = DS3Interop.GetPlayerName(slot);
+                    int team = DS3Interop.GetPlayerTeam(slot);
+                    PlayerAttributes attributes = null;
+                    try { attributes = DS3Interop.GetPlayerAttributes(character); }
+                    catch (UnauthorizedAccessException) { }
+                    // Reject reads spanning a leave/join transition, even if the slot was reused.
+                    if (DS3Interop.GetPlayerBase(slot) != character ||
+                        DS3Interop.GetTruePlayerSteamId(slot) != id) continue;
+                    player.CharSlot = slot.ToString();
+                    player.CharName = name;
+                    player.TeamId = team;
+                    player.Attributes = attributes;
                 }
-                catch (Exception)
-                {
-                    
-                }
+                catch (Exception) { } // Network and character lifetimes are independent.
             }
         }
 

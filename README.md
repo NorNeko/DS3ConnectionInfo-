@@ -1,58 +1,61 @@
-# DS3ConnectionInfo
-Simple C# application showing active P2P connection information along ping and geolocation for Dark Souls III. In a game whose PvP is highly dependent on spacing and timing, knowing the latency between you and your opponent before the fight can be pretty useful. Also implements an in game overlay (**windowed or borderless windowed mode only**) and a simple ping filter (it has many limitations, see FAQ for more information).
+# DS3ConnectionInfo 中文增强版
 
-## [Download](https://github.com/tremwil/DS3ConnectionInfo/releases/download/V4.5/DS3ConnectionInfo-V4.5.zip)
+这是 [tremwil/DS3ConnectionInfo](https://github.com/tremwil/DS3ConnectionInfo) 的社区 fork，用于显示 Dark Souls III 在线房间玩家的连接信息和本地同步角色数据。程序以只读方式获取新增角色属性；原有入侵快捷键等功能仍沿用上游实现。
 
-## DISCLAIMER: 
-**Do not share the location information provided by this program. While you should be free to view it yourself since the players are connected to your computer, respect the privacy of others. I am not responsible for any misuse of this information.**
+当前版本：`v4.5.0-cn.1`，适配 Dark Souls III `1.15.2.0`、Windows x64 和 .NET Framework 4.7.2。
 
-**I release the source code of the program for transparency and because C# is easy to decompile anyways. You are free to re-use parts of this code for other projects, but please give proper attribution.** 
+## 主要功能
 
-![](https://s01.geekpic.net/di-L8U0SH.png)
+- 显示玩家名称、Steam ID、地区、延迟、队伍等原有信息。
+- 显示等级、生命力、集中力、持久力、力量、敏捷、智力、信仰和当前/最大生命值。
+- 主窗口与游戏悬浮层同步字段显隐和排序。
+- 为每个悬浮字段单独设置文字颜色，也可恢复原有阵营和延迟配色规则。
+- 默认简体中文，可在界面右上角即时切换中文或 English，并保存选择。
+- 已移除原作者仓库的过时版本检查，不再在启动时弹出旧版更新通知。
 
-# Installation
-Download the lastest release from the Releases tab and extract the ZIP file in any folder on your computer. Start `DS3ConnectionInfo.exe` whenever you want to use it. If you restart the game, you will also have to restart the program.
+## 下载与运行
 
-# Known Issues (V4.1)
+从本 fork 的 **Releases** 页面下载 `DS3ConnectionInfo-v4.5.0-cn.1-win-x64.exe`，直接运行即可。单文件会把运行组件释放到 `%LOCALAPPDATA%\DS3ConnectionInfo\v4.5.0-cn.1\`；无需手动解压或携带 DLL。程序会请求管理员权限，因为原有延迟检测通过 Windows ETW 读取网络事件。
 
-### My game crashed after I returned from another world / revived
-If you are using the invasion hotkeys, this can happen if you queue an invasion during a loading screen. The program will try to prevent you from doing so, but there is a small window where it thinks you are no longer in a loading screen while queueing an invasion will still crash. Simply wait until your character is completely loaded. This will be fixed once I find a better indicator for when the game is in a loading screen.
+Dark Souls III 需要使用窗口化或无边框窗口模式，悬浮层才能显示。重启游戏后也需要重新启动本程序。
 
-### My settings are not getting saved
-This is a bug in V4.1 where your settings will not be saved when the program closes with the game. To save your settings, configure everything and then close the program without the game running. See [Issue #9](https://github.com/tremwil/DS3ConnectionInfo/issues/9) for more information.
+## 字段设置
 
-### The program crashes on startup / when I start Dark Souls III
-This is most likely due to interference from anti-virus software. Although all the Windows API calls used by this program are not uncommon, some antivirus can be overly strict. Whitelisting the application should fix this issue. See [Issue #8](https://github.com/tremwil/DS3ConnectionInfo/issues/8) for more information.
+在“设置”或“悬浮显示”的字段列表中，可以选择并显示以下新增项目：
 
-# FAQ
+1. 等级
+2. 生命力
+3. 集中力
+4. 持久力
+5. 力量
+6. 敏捷
+7. 智力
+8. 信仰
+9. 当前血量 / 最大生命值
 
-### Is it bannable?
-It is 100% ban-safe, as the program does not modify the game's original code in any way. The program does allocate new memory in the Dark Souls III process to execute in-game functions (eg. query an invasion), however, but this does not cause bans.
+新增字段默认隐藏。每一行对应软件中的玩家槽位 1–5，与游戏锁定目标无关。详细读取链、兼容范围和验证记录见 [玩家属性显示说明](docs/player-attributes.md)。
 
-### How does the ping filter work?
-The ping filter is very basic. It trigger when one attemps to join an online session (either through covenant invasions or summon signs). After the connection with all players is established, the program will wait "Filter Delay" seconds and then compute the average ping of every player in the lobby. If this value is higher than the maximum average threshold or the ping of a single player is higher than the maximum absolute threshold, the online session will be abandonned and your invasion request / summon sign will reset. While this works fairly well in practice, it has some disadvantages:
-- Since it is impossible to know the team of a player before the loading screen, the connection to a friendly player will affect matchmaking. 
-- It is still possible to connect to unacceptably laggy players, if they join the online session after the player using the ping filter. For the same reason, this ping filter is useless for hosts. **This is by design**. I did not want to implement any kind of targeted kick functionality into the program, especially since it is open source.
+## 从源码构建
 
-### Are the pings shown accurate if the other player is using a VPN?
-**Yes**, if V2+ is used. Since the pings are not calculated by pinging the remote IP but rather by listening for STUN reply packets coming from the remote game, using a VPN will not show an incorrect ping. The location information, however, does use the remote IP, and can be hidden using a VPN.
+构建单文件发行版和运行回归检查的方法见 [BUILDING.md](BUILDING.md)。发行产物位于 `artifacts/release/`，该目录不会被 Git 跟踪。
 
-### Why does it require administrator privileges? (V2+)
-In V2+, the pings are computed by monitoring STUN packets that are sent to and recieved from the players' IPs. This is more accurate and updates faster than the traceroute method used in V1. However, to capture these packets I use Event Tracing for Windows (ETW), which requires administrator privileges for "kernel" events like networking. 
+## 已知限制
 
-### Why does the program close when the game does?
-Since the code uses the Steam API with DS3's Steam App ID, letting the program run after the game closes would make Steam think the it is still running. Calling `SteamAPI_Shutdown` does not seem to fix the problem, so we have to close the process. A DLL mod could make this seamless, but making an external program is simpler and doesn't require ban testing.
+- 悬浮层仅支持窗口化或无边框窗口模式。
+- 地区由 [ip-api](https://ip-api.com) 根据远端公开 IP 查询；请尊重其他玩家隐私，不要传播位置数据。
+- 当前属性来自本地客户端同步的运行时对象。在密码联机降级、装备加成或非标准客户端下，它不一定等同于对方存档中的原始加点。
+- 延迟筛选是上游提供的基础实现，后加入房间的玩家可能不参与当次判断，房主场景也不适用。
 
-### Why show the location of players?
-The ping system used in V1 could sometimes be inaccurate due to early network nodes blocking ping packets. Showing basic geolocation information could help to get a more reliable idea of the latency in that case. With V2+ this is no longer necessary, but since it is still possible to access the old release and source I have decided to keep this feature in. When playing any direct P2P game such as Dark Souls III you should be aware that your public IP address (which is linked to your location) is transmitted to other players. **This is not a security exploit.** Use a VPN if you wish to keep this information private.
+## 实现概览
 
-### I found a bug / I have something to say about the mod
-Feel free to open an issue on this Github or direct message me on discord at tremwil#3713.
+程序通过 Steam API 查询最近遇到玩家的 Steam ID 和 P2P 会话状态，得到在线状态及远端 IP，再与游戏内存中的玩家槽位和角色名对应。延迟由 Windows ETW 捕获与远端 IP 相关的 STUN 网络事件计算，地区信息来自 ip-api。新增等级、属性和血量从 Dark Souls III 进程中的 `WorldChrMan` 玩家对象只读获取。
 
-# How it works (V2+)
-The Steam API is used to query the Steam ID of recently met players. Using `GetP2PSessionState`, we are able to query if each player is currently connected and get the remote IP address. This is then matched to the slot and character name from the game's memory. The reason for using recently met players instead of simply reading the Steam ID from the game's memory is that the latter can be spoofed by players (for example when running the PyreProtecc anti cheat). To calculate the pings, ETW (Event Tracing for Windows) networking events are monitored to find when STUN packets are sent to and recieved from player IPs. The region-specific geolocating comes from [ip-api](https://ip-api.com).
+## 安全与隐私
 
-# How it works (V1)
-The program reads the Steam ID and character name of active players from the game's memory (like Cheat Engine). From there we use the Steam API function `GetP2PSessionState` to get the remote IP address. Since most routers deny ICMP ping requests, I use a traceroute like method to ping the network node that is closest to the player IP. This gives a pretty good estimate for the ping, but it will always be lower than the true value. Hence I also provide region-specific geolocating using [ip-api](https://ip-api.com) to query the country and region (state) information.
+程序需要读取游戏进程，并保留上游用于入侵请求等功能的进程内存执行逻辑。新增的属性显示路径只读取内存，不写入属性、存档或角色数据。使用前请自行判断与游戏服务条款、反作弊环境及隐私要求的兼容性。
 
-Credits to the developers of the DS3 Grand Archives Cheat Table for the player data pointers.
+## 致谢与授权说明
+
+原项目及主要实现来自 [tremwil/DS3ConnectionInfo](https://github.com/tremwil/DS3ConnectionInfo)。玩家数据指针相关工作也归功于 DS3 Grand Archives Cheat Table 的开发者。
+
+上游仓库没有提供标准 `LICENSE` 文件，其 README 表示允许在注明出处的前提下复用代码。本 fork 保留该来源说明；在确认权利人授权范围前，不额外声明一个可能扩大授权的开源许可证。

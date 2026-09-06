@@ -39,7 +39,7 @@ namespace DS3ConnectionInfo
             }
             catch (WebException err)
             {
-                return "WEB ERROR: " + err.Message;
+                return UiText.Current["WebError"] + err.Message;
             }
 
             if (resp.StatusCode == HttpStatusCode.OK)
@@ -52,11 +52,11 @@ namespace DS3ConnectionInfo
                         return (data["regionName"].ToString() == "") ? data["country"].ToString() :
                             string.Format("{0}, {1}", data["regionName"], data["country"]);
                     }
-                    return "GEOLOCATION FAIL: " + data["message"].ToString();
+                    return UiText.Current["GeoError"] + data["message"].ToString();
                 }
             }
 
-            return string.Format("HTTP ERROR ({0}): {1}", resp.StatusCode, resp.StatusDescription);
+            return string.Format(UiText.Current["HttpError"], resp.StatusCode, resp.StatusDescription);
         }
 
         private static void QueryTask(object o)

@@ -39,12 +39,20 @@ namespace DS3ConnectionInfo
         private bool pingCheked = false;
         private bool hadInvaded = false;
 
-        public MainWindow()
+        private readonly bool startServices;
+        private bool fieldControlsReady, refreshingFields;
+        public MainWindow() : this(true) { }
+
+        // Allows the real compiled UI to be exercised without starting Steam or game timers.
+        public MainWindow(bool startServices)
         {
+            this.startServices = startServices;
             AppDomain.CurrentDomain.UnhandledException += (s, e) => ShowUnhandledException((Exception)e.ExceptionObject, "CurrentDomain", e.IsTerminating);
             TaskScheduler.UnobservedTaskException += (s, e) => ShowUnhandledException(e.Exception, "TaskScheduler", false);
             Dispatcher.UnhandledException += (s, e) => { if (!Debugger.IsAttached) ShowUnhandledException(e.Exception, "Dispatcher", true); };
 
+            ColumnSettings.EnsureCompatible();
+            UiText.Current.SelectLanguage(Settings.Default.UILanguage);
             InitializeComponent();
             overlay = new OverlayWindow();
             Closed += MainWindow_Closed;
@@ -52,7 +60,7 @@ namespace DS3ConnectionInfo
             gameStartTimer = new DispatcherTimer();
             gameStartTimer.Interval = TimeSpan.FromSeconds(1);
             gameStartTimer.Tick += GameStartTimer_Tick;
-            gameStartTimer.Start();
+            if (startServices) gameStartTimer.Start();
 
             updateTimer = new DispatcherTimer();
             updateTimer.Interval = TimeSpan.FromSeconds(0.5);
@@ -64,30 +72,42 @@ namespace DS3ConnectionInfo
             playerData = new ObservableCollection<Player>();
             dataGridSession.DataContext = playerData;
             overlay.dataGrid.DataContext = playerData;
-            Title = "DS3 Connection Info " + VersionCheck.CurrentVersion;
+            UiText.Current.PropertyChanged += LanguageChanged;
+            ApplyLanguage();
 
             swColVisible.IsOn = Settings.Default.SessColumnVisibility[0] == "Visible";
             swOColVisible.IsOn = Settings.Default.OverlayColVisibility[0] == "Visible";
-            textColDesc.Text = Settings.Default.SessColumnDescs[0];
+            textColDesc.Text = UiText.Current["Description0"];
             UpdateColVisibility();
             overlay.UpdateColVisibility();
 
-            Task.Run(() =>
-            {
-                if (VersionCheck.FetchLatest())
-                {
-                    string v = VersionCheck.LatestRelease["tag_name"].ToString();
-                    if (string.Compare(VersionCheck.CurrentVersion, v) < 0)
-                    {
-                        this.Invoke(() =>
-                        {
-                            linkUpdate.NavigateUri = new Uri("https://github.com/tremwil/DS3ConnectionInfo/releases/tag/" + v);
-                            textUpdate.Text = string.Format("NEW VERSION ({0}), DOWNLOAD HERE", v);
-                            this.ShowMessageAsync("New Version Available", string.Format("{0} is out! Click the link in the title bar to download it.", v));
-                        });
-                    }
-                }
-            });
+            RestoreColumnOrder();
+            fieldControlsReady = true;
+            RefreshFieldControls();
+        }
+
+        private void Language_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!(cbLanguage.SelectedItem is ComboBoxItem item)) return;
+            string language = (string)item.Tag;
+            if (UiText.Current.Language == language) return;
+            UiText.Current.SelectLanguage(language);
+            if (startServices) Settings.Default.Save();
+        }
+
+        private void LanguageChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Language") ApplyLanguage();
+        }
+
+        private void ApplyLanguage()
+        {
+            Title = UiText.Current["Title"] + " " + AppVersion.CurrentVersion;
+            cbLanguage.SelectedIndex = UiText.Current.Language == "en" ? 1 : 0;
+            labelGameState.Content = UiText.Current[DS3Interop.Attached ? "Running" : "Closed"];
+            textColDesc.Text = UiText.Current["Description" + Math.Max(0, cbColName.SelectedIndex)];
+            dataGridSession.Items.Refresh();
+            overlay.RefreshLanguage();
         }
 
         private void ShowUnhandledException(Exception err, string type, bool fatal)
@@ -95,12 +115,12 @@ namespace DS3ConnectionInfo
             MetroDialogSettings diagSettings = new MetroDialogSettings()
             {
                 ColorScheme = MetroDialogColorScheme.Accented,
-                AffirmativeButtonText = "Copy",
-                NegativeButtonText = "Close"
+                AffirmativeButtonText = UiText.Current["Copy"],
+                NegativeButtonText = UiText.Current["Close"]
             };
 
             SystemSounds.Exclamation.Play();
-            var result = this.ShowModalMessageExternal($"Unhandled Exception: {err.GetType().Name}", $"{err.Message}\n{err.StackTrace}", MessageDialogStyle.AffirmativeAndNegative, diagSettings);
+            var result = this.ShowModalMessageExternal(string.Format(UiText.Current["Unhandled"], err.GetType().Name), $"{err.Message}\n{err.StackTrace}", MessageDialogStyle.AffirmativeAndNegative, diagSettings);
             if (result == MessageDialogResult.Affirmative)
                 Clipboard.SetText($"{err.GetType().Name}: {err.Message}\n{err.StackTrace}");
 
@@ -112,7 +132,7 @@ namespace DS3ConnectionInfo
             for (int i = 0; i < Settings.Default.SessColumnVisibility.Count; i++)
             {
                 string vis = Settings.Default.SessColumnVisibility[i];
-                dataGridSession.Columns[i].Visibility = (Visibility)Enum.Parse(typeof(Visibility), vis);
+                dataGridSession.Columns[i].Visibility = vis == "Visible" ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 
@@ -215,10 +235,17 @@ namespace DS3ConnectionInfo
 
         private void MainWindow_Closed(object sender, EventArgs e)
         {
-            Settings.Default.Save();
+            UiText.Current.PropertyChanged -= LanguageChanged;
+            if (startServices) Settings.Default.Save();
+            gameStartTimer.Stop();
+            updateTimer.Stop();
+            pingFilterTimer.Stop();
             overlay.Close();
-            HotkeyManager.Disable();
-            ETWPingMonitor.Stop();
+            if (startServices)
+            {
+                HotkeyManager.Disable();
+                ETWPingMonitor.Stop();
+            }
         }
 
         private void GameStartTimer_Tick(object sender, EventArgs e)
@@ -227,21 +254,21 @@ namespace DS3ConnectionInfo
             {
                 DS3Interop.Process.EnableRaisingEvents = true;
                 DS3Interop.Process.Exited += DarkSouls_HasExited;
-                labelGameState.Content = "DS3: RUNNING";
+                labelGameState.Content = UiText.Current["Running"];
                 labelGameState.Foreground = Brushes.LawnGreen;
 
                 File.WriteAllText("steam_appid.txt", "374320");
                 if (!SteamAPI.Init())
                 {
-                    MessageBox.Show("Could not initialize Steam API", "Steam API Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(UiText.Current["SteamInit"], UiText.Current["SteamError"], MessageBoxButton.OK, MessageBoxImage.Error);
                     Close();
                 }
 
                 if (Settings.Default.UseHotkeys && !HotkeyManager.Enable())
-                    MessageBox.Show("Could not initialize keyboard hook for hotkeys", "WINAPI Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(UiText.Current["KeyboardInit"], UiText.Current["WindowsError"], MessageBoxButton.OK, MessageBoxImage.Error);
 
                 if (!overlay.InstallMsgHook())
-                    MessageBox.Show("Could not setup overlay message hook", "WINAPI Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(UiText.Current["OverlayInit"], UiText.Current["WindowsError"], MessageBoxButton.OK, MessageBoxImage.Error);
 
                 overlay.UpdateVisibility();
                 if (swBorderless.IsOn ^ DS3Interop.Borderless)
@@ -297,31 +324,97 @@ namespace DS3ConnectionInfo
             }
         }
 
-        private void cbColName_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void RefreshFieldControls()
         {
-            if (!IsInitialized) return;
-            swColVisible.IsOn = Settings.Default.SessColumnVisibility[cbColName.SelectedIndex] == "Visible";
-            textColDesc.Text = Settings.Default.SessColumnDescs[cbColName.SelectedIndex];
+            if (!fieldControlsReady) return;
+            refreshingFields = true;
+            try
+            {
+                int session = Math.Max(0, cbColName.SelectedIndex);
+                int field = Math.Max(0, cbOColName.SelectedIndex);
+                swColVisible.IsOn = Settings.Default.OverlayColVisibility[session] == "Visible";
+                swOColVisible.IsOn = Settings.Default.OverlayColVisibility[field] == "Visible";
+                textColDesc.Text = UiText.Current["Description" + session];
+                string color = Settings.Default.OverlayColumnColors[field];
+                fieldColorPicker.SelectedColor = (Color)ColorConverter.ConvertFromString(
+                    string.IsNullOrEmpty(color) ? Settings.Default.TextColor : color);
+                resetFieldColor.IsEnabled = !string.IsNullOrEmpty(color);
+            }
+            finally { refreshingFields = false; }
         }
+
+        private void SaveFieldSettings()
+        {
+            if (startServices) Settings.Default.Save();
+        }
+
+        private void SetFieldVisibility(int index, bool visible)
+        {
+            var values = ColumnSettings.Normalize(Settings.Default.OverlayColVisibility);
+            values[index] = visible ? "Visible" : "Hidden";
+            Settings.Default.OverlayColVisibility = values;
+            Settings.Default.SessColumnVisibility = ColumnSettings.Normalize(values);
+            UpdateColVisibility();
+            overlay.UpdateColVisibility();
+            RefreshFieldControls();
+            SaveFieldSettings();
+        }
+
+        private void cbColName_SelectionChanged(object sender, SelectionChangedEventArgs e) => RefreshFieldControls();
+        private void cbOColName_SelectionChanged(object sender, SelectionChangedEventArgs e) => RefreshFieldControls();
 
         private void swColVisible_Toggled(object sender, RoutedEventArgs e)
         {
-            if (!IsInitialized) return;
-            Settings.Default.SessColumnVisibility[cbColName.SelectedIndex] = swColVisible.IsOn ? "Visible" : "Hidden";
-            UpdateColVisibility();
-        }
-
-        private void cbOColName_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (!IsInitialized) return;
-            swOColVisible.IsOn = Settings.Default.OverlayColVisibility[cbOColName.SelectedIndex] == "Visible";
+            if (fieldControlsReady && !refreshingFields)
+                SetFieldVisibility(cbColName.SelectedIndex, swColVisible.IsOn);
         }
 
         private void swOColVisible_Toggled(object sender, RoutedEventArgs e)
         {
-            if (!IsInitialized) return;
-            Settings.Default.OverlayColVisibility[cbOColName.SelectedIndex] = swOColVisible.IsOn ? "Visible" : "Hidden";
-            overlay.UpdateColVisibility();
+            if (fieldControlsReady && !refreshingFields)
+                SetFieldVisibility(cbOColName.SelectedIndex, swOColVisible.IsOn);
+        }
+
+        private void FieldColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
+        {
+            if (!fieldControlsReady || refreshingFields || !fieldColorPicker.SelectedColor.HasValue) return;
+            var values = ColumnSettings.NormalizeColors(Settings.Default.OverlayColumnColors);
+            // MahApps 2.4.5 reverses OldValue/NewValue in this event; use the actual selected value.
+            values[cbOColName.SelectedIndex] = fieldColorPicker.SelectedColor.Value.ToString();
+            Settings.Default.OverlayColumnColors = values;
+            resetFieldColor.IsEnabled = true;
+            SaveFieldSettings();
+        }
+
+        private void ResetFieldColor(object sender, RoutedEventArgs e)
+        {
+            var values = ColumnSettings.NormalizeColors(Settings.Default.OverlayColumnColors);
+            values[cbOColName.SelectedIndex] = "";
+            Settings.Default.OverlayColumnColors = values;
+            RefreshFieldControls();
+            SaveFieldSettings();
+        }
+
+        private void RestoreColumnOrder()
+        {
+            var order = ColumnSettings.NormalizeOrder(Settings.Default.SessionColumnOrder);
+            for (int position = 0; position < order.Count; position++)
+            {
+                int field = int.Parse(order[position]);
+                dataGridSession.Columns[field].DisplayIndex = position;
+                overlay.dataGrid.Columns[field].DisplayIndex = position;
+            }
+        }
+
+        private void SessionColumnReordered(object sender, DataGridColumnEventArgs e)
+        {
+            if (!fieldControlsReady) return;
+            var order = new System.Collections.Specialized.StringCollection();
+            foreach (var column in dataGridSession.Columns.OrderBy(c => c.DisplayIndex))
+                order.Add(dataGridSession.Columns.IndexOf(column).ToString());
+            Settings.Default.SessionColumnOrder = order;
+            RestoreColumnOrder();
+            SaveFieldSettings();
         }
 
         private void swOverlay_Toggled(object sender, RoutedEventArgs e)
@@ -337,8 +430,9 @@ namespace DS3ConnectionInfo
 
         private void swToggleHotkeys_Toggled(object sender, RoutedEventArgs e)
         {
+            if (!startServices) return;
             if (Settings.Default.UseHotkeys && !HotkeyManager.Enable())
-                MessageBox.Show("Could not initialize keyboard hook for hotkeys", "WINAPI Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(UiText.Current["KeyboardInit"], UiText.Current["WindowsError"], MessageBoxButton.OK, MessageBoxImage.Error);
 
             if (!Settings.Default.UseHotkeys) HotkeyManager.Disable();
         }
@@ -350,10 +444,21 @@ namespace DS3ConnectionInfo
 
         private void btnResetSettings_Click(object sender, RoutedEventArgs e)
         {
+            fieldControlsReady = false;
             Settings.Default.Reset();
+            ColumnSettings.EnsureCompatible();
+            UiText.Current.SelectLanguage(Settings.Default.UILanguage);
+            ApplyLanguage();
             cbColName.SelectedIndex = 0;
-            cbOColName.SelectedItem = 0;
+            cbOColName.SelectedIndex = 0;
+            swColVisible.IsOn = Settings.Default.SessColumnVisibility[0] == "Visible";
+            swOColVisible.IsOn = Settings.Default.OverlayColVisibility[0] == "Visible";
             UpdateColVisibility();
+            overlay.UpdateColVisibility();
+            RestoreColumnOrder();
+            fieldControlsReady = true;
+            RefreshFieldControls();
+            SaveFieldSettings();
         }
 
         private void webLink_RequestNavigate(object sender, RequestNavigateEventArgs e)

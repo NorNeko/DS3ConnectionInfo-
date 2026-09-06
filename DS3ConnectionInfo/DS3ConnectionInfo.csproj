@@ -130,7 +130,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="VersionCheck.cs" />
+    <Compile Include="AppVersion.cs" />
     <Compile Include="WinAPI\CWPRETSTRUCT.cs" />
     <Compile Include="WinAPI\KBDLLHOOKSTRUCT.cs" />
     <Compile Include="WinAPI\MemProtect.cs" />
@@ -157,6 +157,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PlayerAttributes.cs" />
+    <Compile Include="ColumnSettings.cs" />
+    <Compile Include="FieldColorConverter.cs" />
+    <Compile Include="UiText.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

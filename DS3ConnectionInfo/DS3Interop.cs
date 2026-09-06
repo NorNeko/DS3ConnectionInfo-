@@ -104,32 +104,33 @@ namespace DS3ConnectionInfo
         /// <summary>
         /// BaseA (Game) address
         /// </summary>
-        public const long BaseA = 0x144740178;
+        public static long BaseA => MainModuleBase + 0x47572B8;
 
         /// <summary>
         /// BaseB (WorldChrMan) address
         /// </summary>
-        public const long BaseB = 0x144768E78;
+        public static long BaseB => MainModuleBase + 0x477FDB8;
 
         /// <summary>
         /// BaseC (GameOptionMan) address
         /// </summary>
-        public const long BaseC = 0x144743AB0;
+        public static long BaseC => MainModuleBase + 0x475AC00;
 
         /// <summary>
         /// FRPGNet address
         /// </summary>
-        public const long BaseE = 0x14473FD08;
+        public static long BaseE => MainModuleBase + 0x4756E48;
 
         /// <summary>
         /// SprjSessionManager address
         /// </summary>
-        public const long SprjSession = 0x144780990;
+        public static long SprjSession => MainModuleBase + 0x4796260;
 
         /// <summary>
         /// DS3.exe Base Address
         /// </summary>
-        public const long MainModuleBase = 0x140000000;
+        // DS3 1.15.2 offsets, verified against the locally working executable.
+        public static long MainModuleBase => Process.MainModule.BaseAddress.ToInt64();
 
         /// <summary>
         /// Apply Effect script x86_64
@@ -233,29 +234,35 @@ namespace DS3ConnectionInfo
 
         public static long GetPlayerBase(int slot)
         {
-            return MemoryManager.ReadGenericPtr<long>(ProcHandle, BaseB, 0x40, 0x38 * (slot + 1));
+            return MemoryManager.ReadGenericPtr<long>(ProcHandle, BaseB, 0x40, 0x38 * slot);
+        }
+
+        public static PlayerAttributes GetPlayerAttributes(long character)
+        {
+            return PlayerAttributes.Read(character,
+                (address, length) => MemoryManager.ReadByteArray(ProcHandle, address, length));
         }
 
         public static Steamworks.CSteamID GetPlayerSteamId(int slot)
         {
-            string sid = MemoryManager.ReadStringPtr(ProcHandle, 32, Encoding.Unicode, BaseB, 0x40, 0x38 * (slot + 1), 0x1FA0, 0x7D8);
+            string sid = MemoryManager.ReadStringPtr(ProcHandle, 32, Encoding.Unicode, BaseB, 0x40, 0x38 * slot, 0x1FA0, 0x7D8);
             if (ulong.TryParse(sid, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out ulong id)) return new Steamworks.CSteamID(id);
             return new Steamworks.CSteamID(0);
         }
 
         public static string GetPlayerName(int slot)
         {
-            return MemoryManager.ReadStringPtrNT(ProcHandle, 32, Encoding.Unicode, BaseB, 0x40, 0x38 * (slot + 1), 0x1FA0, 0x88);
+            return MemoryManager.ReadStringPtrNT(ProcHandle, 32, Encoding.Unicode, BaseB, 0x40, 0x38 * slot, 0x1FA0, 0x88);
         }
 
         public static int GetPlayerTeam(int slot)
         {
-            return MemoryManager.ReadGenericPtr<int>(ProcHandle, BaseB, 0x40, 0x38 * (slot + 1), 0x74);
+            return MemoryManager.ReadGenericPtr<int>(ProcHandle, BaseB, 0x40, 0x38 * slot, 0x74);
         }
 
         public static long GetPlayerNetHandle(int slot)
         {
-            return MemoryManager.ReadGenericPtr<long>(ProcHandle, BaseB, 0x40, 0x38 * (slot + 1), 0x1FD0, 0x8);
+            return MemoryManager.ReadGenericPtr<long>(ProcHandle, BaseB, 0x40, 0x38 * slot, 0x1FD0, 0x8);
         }
 
         /// <summary>
@@ -292,7 +299,11 @@ namespace DS3ConnectionInfo
 
         public static void ApplyEffect(int effectId)
         {
-            MemoryManager.ExecuteFunction(ProcHandle, applyEffect, new Dictionary<int, object>()
+            // Patch a private copy with relocated addresses, as in the working 1.15.2 build.
+            byte[] script = (byte[])applyEffect.Clone();
+            Array.Copy(BitConverter.GetBytes(BaseB), 0, script, 0x0F, 8);
+            Array.Copy(BitConverter.GetBytes(MainModuleBase + 0x88F710), 0, script, 0x2A, 8);
+            MemoryManager.ExecuteFunction(ProcHandle, script, new Dictionary<int, object>()
             {
                 { 0x2, effectId }
             });
@@ -300,7 +311,10 @@ namespace DS3ConnectionInfo
 
         public static void LeaveSession()
         {
-            MemoryManager.ExecuteFunction(ProcHandle, leaveSession);
+            byte[] script = (byte[])leaveSession.Clone();
+            Array.Copy(BitConverter.GetBytes(SprjSession), 0, script, 0x02, 8);
+            Array.Copy(BitConverter.GetBytes(MainModuleBase + 0xDF7A00), 0, script, 0x13, 8);
+            MemoryManager.ExecuteFunction(ProcHandle, script);
         }
 
         public static NetStatus GetNetworkState()

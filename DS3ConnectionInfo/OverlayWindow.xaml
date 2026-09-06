@@ -15,6 +15,7 @@
         ShowActivated="False"
         Title="DS3ConnectionInfo Overlay Window" ContentRendered="Window_ContentRendered" MouseDown="Window_MouseDown" MouseUp="Window_MouseUp">
     <Window.Resources>
+        <local:FieldColorConverter x:Key="FieldColorConverter" />
         <Style TargetType="{x:Type local:OverlayTextBlock}" x:Key="defaultStyle">
             <Setter Property="Margin" Value="5 0"></Setter>
             <Setter Property="Fill" Value="{Binding Source={x:Static local:Settings.Default}, Path=TextColor}"></Setter>
@@ -31,80 +32,283 @@
         <DataGrid CanUserSortColumns="False" IsReadOnly="True" CanUserReorderColumns="False" CanUserResizeColumns="False" HeadersVisibility="None" 
                   Background="Transparent" RowBackground="Transparent" ItemsSource="{Binding}" AutoGenerateColumns="False" Name="dataGrid" ColumnWidth="SizeToCells">
             <DataGrid.Columns>
-                <DataGridTemplateColumn Header="Slot" SortDirection="Ascending">
+                <DataGridTemplateColumn Header="{Binding [Slot], Source={x:Static local:UiText.Current}, Mode=OneWay}" SortDirection="Ascending">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <local:OverlayTextBlock Text="{Binding CharSlot}" Style="{StaticResource defaultStyle}" TextAlignment="center" />
+                            <local:OverlayTextBlock Text="{Binding CharSlot}" Style="{StaticResource defaultStyle}" TextAlignment="center" >
+                                <local:OverlayTextBlock.Fill>
+                                    <MultiBinding Converter="{StaticResource FieldColorConverter}" ConverterParameter="0">
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="OverlayColumnColors" />
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="TextColor" />
+                                    </MultiBinding>
+                                </local:OverlayTextBlock.Fill>
+                            </local:OverlayTextBlock>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Char. Name">
+                <DataGridTemplateColumn Header="{Binding [Character], Source={x:Static local:UiText.Current}, Mode=OneWay}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <local:OverlayTextBlock Text="{Binding CharName}" Style="{StaticResource defaultStyle}" />
+                            <local:OverlayTextBlock Text="{Binding CharName}" Style="{StaticResource defaultStyle}" >
+                                <local:OverlayTextBlock.Fill>
+                                    <MultiBinding Converter="{StaticResource FieldColorConverter}" ConverterParameter="1">
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="OverlayColumnColors" />
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="TextColor" />
+                                    </MultiBinding>
+                                </local:OverlayTextBlock.Fill>
+                            </local:OverlayTextBlock>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Team Name">
+                <DataGridTemplateColumn Header="{Binding [TeamName], Source={x:Static local:UiText.Current}, Mode=OneWay}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <local:OverlayTextBlock Text="{Binding TeamName}" Fill="{Binding TeamColor}" Style="{StaticResource defaultStyle}" />
+                            <local:OverlayTextBlock Text="{Binding TeamName}" Style="{StaticResource defaultStyle}" >
+                                <local:OverlayTextBlock.Fill>
+                                    <MultiBinding Converter="{StaticResource FieldColorConverter}" ConverterParameter="2">
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="OverlayColumnColors" />
+                                        <Binding Path="TeamColor" />
+                                    </MultiBinding>
+                                </local:OverlayTextBlock.Fill>
+                            </local:OverlayTextBlock>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Steam Name">
+                <DataGridTemplateColumn Header="{Binding [SteamName], Source={x:Static local:UiText.Current}, Mode=OneWay}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <local:OverlayTextBlock Text="{Binding SteamName}" Fill="{Binding SteamNameColor}" Style="{StaticResource defaultStyle}" />
+                            <local:OverlayTextBlock Text="{Binding SteamName}" Style="{StaticResource defaultStyle}" >
+                                <local:OverlayTextBlock.Fill>
+                                    <MultiBinding Converter="{StaticResource FieldColorConverter}" ConverterParameter="3">
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="OverlayColumnColors" />
+                                        <Binding Path="SteamNameColor" />
+                                    </MultiBinding>
+                                </local:OverlayTextBlock.Fill>
+                            </local:OverlayTextBlock>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Overlay Name">
+                <DataGridTemplateColumn Header="{Binding [OverlayName], Source={x:Static local:UiText.Current}, Mode=OneWay}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <local:OverlayTextBlock Text="{Binding OverlayName}" Fill="{Binding SteamNameColor}" Style="{StaticResource defaultStyle}" />
+                            <local:OverlayTextBlock Text="{Binding OverlayName}" Style="{StaticResource defaultStyle}" >
+                                <local:OverlayTextBlock.Fill>
+                                    <MultiBinding Converter="{StaticResource FieldColorConverter}" ConverterParameter="4">
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="OverlayColumnColors" />
+                                        <Binding Path="SteamNameColor" />
+                                    </MultiBinding>
+                                </local:OverlayTextBlock.Fill>
+                            </local:OverlayTextBlock>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Steam ID 64">
+                <DataGridTemplateColumn Header="{Binding [SteamId], Source={x:Static local:UiText.Current}, Mode=OneWay}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <local:OverlayTextBlock Text="{Binding SteamId64}" Style="{StaticResource defaultStyle}" />
+                            <local:OverlayTextBlock Text="{Binding SteamId64}" Style="{StaticResource defaultStyle}" >
+                                <local:OverlayTextBlock.Fill>
+                                    <MultiBinding Converter="{StaticResource FieldColorConverter}" ConverterParameter="5">
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="OverlayColumnColors" />
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="TextColor" />
+                                    </MultiBinding>
+                                </local:OverlayTextBlock.Fill>
+                            </local:OverlayTextBlock>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Ping">
+                <DataGridTemplateColumn Header="{Binding [Ping], Source={x:Static local:UiText.Current}, Mode=OneWay}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <local:OverlayTextBlock Text="{Binding Ping, StringFormat=N0}" Fill="{Binding PingColor}" TextAlignment="Right" Style="{StaticResource defaultStyle}" />
+                            <local:OverlayTextBlock Text="{Binding Ping, StringFormat=N0}" TextAlignment="Right" Style="{StaticResource defaultStyle}" >
+                                <local:OverlayTextBlock.Fill>
+                                    <MultiBinding Converter="{StaticResource FieldColorConverter}" ConverterParameter="6">
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="OverlayColumnColors" />
+                                        <Binding Path="PingColor" />
+                                    </MultiBinding>
+                                </local:OverlayTextBlock.Fill>
+                            </local:OverlayTextBlock>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Avg. Ping">
+                <DataGridTemplateColumn Header="{Binding [AvgPing], Source={x:Static local:UiText.Current}, Mode=OneWay}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <local:OverlayTextBlock Text="{Binding AveragePing, StringFormat=N0}" Fill="{Binding PingColor}" TextAlignment="Right" Style="{StaticResource defaultStyle}" />
+                            <local:OverlayTextBlock Text="{Binding AveragePing, StringFormat=N0}" TextAlignment="Right" Style="{StaticResource defaultStyle}" >
+                                <local:OverlayTextBlock.Fill>
+                                    <MultiBinding Converter="{StaticResource FieldColorConverter}" ConverterParameter="7">
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="OverlayColumnColors" />
+                                        <Binding Path="PingColor" />
+                                    </MultiBinding>
+                                </local:OverlayTextBlock.Fill>
+                            </local:OverlayTextBlock>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Jitter">
+                <DataGridTemplateColumn Header="{Binding [Jitter], Source={x:Static local:UiText.Current}, Mode=OneWay}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <local:OverlayTextBlock Text="{Binding Jitter, StringFormat=N1}" TextAlignment="Center" Style="{StaticResource defaultStyle}" />
+                            <local:OverlayTextBlock Text="{Binding Jitter, StringFormat=N1}" TextAlignment="Center" Style="{StaticResource defaultStyle}" >
+                                <local:OverlayTextBlock.Fill>
+                                    <MultiBinding Converter="{StaticResource FieldColorConverter}" ConverterParameter="8">
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="OverlayColumnColors" />
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="TextColor" />
+                                    </MultiBinding>
+                                </local:OverlayTextBlock.Fill>
+                            </local:OverlayTextBlock>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Late Packet %">
+                <DataGridTemplateColumn Header="{Binding [LatePackets], Source={x:Static local:UiText.Current}, Mode=OneWay}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <local:OverlayTextBlock Text="{Binding LatePacketRatio, StringFormat=N1}" TextAlignment="Center" Style="{StaticResource defaultStyle}" />
+                            <local:OverlayTextBlock Text="{Binding LatePacketRatio, StringFormat=N1}" TextAlignment="Center" Style="{StaticResource defaultStyle}" >
+                                <local:OverlayTextBlock.Fill>
+                                    <MultiBinding Converter="{StaticResource FieldColorConverter}" ConverterParameter="9">
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="OverlayColumnColors" />
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="TextColor" />
+                                    </MultiBinding>
+                                </local:OverlayTextBlock.Fill>
+                            </local:OverlayTextBlock>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Location">
+                <DataGridTemplateColumn Header="{Binding [Location], Source={x:Static local:UiText.Current}, Mode=OneWay}">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <local:OverlayTextBlock Text="{Binding Region}" Style="{StaticResource defaultStyle}" />
+                            <local:OverlayTextBlock Text="{Binding Region}" Style="{StaticResource defaultStyle}" >
+                                <local:OverlayTextBlock.Fill>
+                                    <MultiBinding Converter="{StaticResource FieldColorConverter}" ConverterParameter="10">
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="OverlayColumnColors" />
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="TextColor" />
+                                    </MultiBinding>
+                                </local:OverlayTextBlock.Fill>
+                            </local:OverlayTextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="{Binding [Level], Source={x:Static local:UiText.Current}, Mode=OneWay}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <local:OverlayTextBlock Text="{Binding Level, TargetNullValue=—}" Style="{StaticResource defaultStyle}" TextAlignment="Right" >
+                                <local:OverlayTextBlock.Fill>
+                                    <MultiBinding Converter="{StaticResource FieldColorConverter}" ConverterParameter="11">
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="OverlayColumnColors" />
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="TextColor" />
+                                    </MultiBinding>
+                                </local:OverlayTextBlock.Fill>
+                            </local:OverlayTextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="{Binding [Vigor], Source={x:Static local:UiText.Current}, Mode=OneWay}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <local:OverlayTextBlock Text="{Binding Vigor, TargetNullValue=—}" Style="{StaticResource defaultStyle}" TextAlignment="Right" >
+                                <local:OverlayTextBlock.Fill>
+                                    <MultiBinding Converter="{StaticResource FieldColorConverter}" ConverterParameter="12">
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="OverlayColumnColors" />
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="TextColor" />
+                                    </MultiBinding>
+                                </local:OverlayTextBlock.Fill>
+                            </local:OverlayTextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="{Binding [Attunement], Source={x:Static local:UiText.Current}, Mode=OneWay}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <local:OverlayTextBlock Text="{Binding Attunement, TargetNullValue=—}" Style="{StaticResource defaultStyle}" TextAlignment="Right" >
+                                <local:OverlayTextBlock.Fill>
+                                    <MultiBinding Converter="{StaticResource FieldColorConverter}" ConverterParameter="13">
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="OverlayColumnColors" />
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="TextColor" />
+                                    </MultiBinding>
+                                </local:OverlayTextBlock.Fill>
+                            </local:OverlayTextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="{Binding [Endurance], Source={x:Static local:UiText.Current}, Mode=OneWay}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <local:OverlayTextBlock Text="{Binding Endurance, TargetNullValue=—}" Style="{StaticResource defaultStyle}" TextAlignment="Right" >
+                                <local:OverlayTextBlock.Fill>
+                                    <MultiBinding Converter="{StaticResource FieldColorConverter}" ConverterParameter="14">
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="OverlayColumnColors" />
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="TextColor" />
+                                    </MultiBinding>
+                                </local:OverlayTextBlock.Fill>
+                            </local:OverlayTextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="{Binding [Strength], Source={x:Static local:UiText.Current}, Mode=OneWay}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <local:OverlayTextBlock Text="{Binding Strength, TargetNullValue=—}" Style="{StaticResource defaultStyle}" TextAlignment="Right" >
+                                <local:OverlayTextBlock.Fill>
+                                    <MultiBinding Converter="{StaticResource FieldColorConverter}" ConverterParameter="15">
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="OverlayColumnColors" />
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="TextColor" />
+                                    </MultiBinding>
+                                </local:OverlayTextBlock.Fill>
+                            </local:OverlayTextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="{Binding [Dexterity], Source={x:Static local:UiText.Current}, Mode=OneWay}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <local:OverlayTextBlock Text="{Binding Dexterity, TargetNullValue=—}" Style="{StaticResource defaultStyle}" TextAlignment="Right" >
+                                <local:OverlayTextBlock.Fill>
+                                    <MultiBinding Converter="{StaticResource FieldColorConverter}" ConverterParameter="16">
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="OverlayColumnColors" />
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="TextColor" />
+                                    </MultiBinding>
+                                </local:OverlayTextBlock.Fill>
+                            </local:OverlayTextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="{Binding [Intelligence], Source={x:Static local:UiText.Current}, Mode=OneWay}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <local:OverlayTextBlock Text="{Binding Intelligence, TargetNullValue=—}" Style="{StaticResource defaultStyle}" TextAlignment="Right" >
+                                <local:OverlayTextBlock.Fill>
+                                    <MultiBinding Converter="{StaticResource FieldColorConverter}" ConverterParameter="17">
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="OverlayColumnColors" />
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="TextColor" />
+                                    </MultiBinding>
+                                </local:OverlayTextBlock.Fill>
+                            </local:OverlayTextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="{Binding [Faith], Source={x:Static local:UiText.Current}, Mode=OneWay}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <local:OverlayTextBlock Text="{Binding Faith, TargetNullValue=—}" Style="{StaticResource defaultStyle}" TextAlignment="Right" >
+                                <local:OverlayTextBlock.Fill>
+                                    <MultiBinding Converter="{StaticResource FieldColorConverter}" ConverterParameter="18">
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="OverlayColumnColors" />
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="TextColor" />
+                                    </MultiBinding>
+                                </local:OverlayTextBlock.Fill>
+                            </local:OverlayTextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="{Binding [Health], Source={x:Static local:UiText.Current}, Mode=OneWay}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <local:OverlayTextBlock Text="{Binding Health, TargetNullValue=—}" Style="{StaticResource defaultStyle}" TextAlignment="Right" >
+                                <local:OverlayTextBlock.Fill>
+                                    <MultiBinding Converter="{StaticResource FieldColorConverter}" ConverterParameter="19">
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="OverlayColumnColors" />
+                                        <Binding Source="{x:Static local:Settings.Default}" Path="TextColor" />
+                                    </MultiBinding>
+                                </local:OverlayTextBlock.Fill>
+                            </local:OverlayTextBlock>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

@@ -2,7 +2,7 @@
 
 这是 [tremwil/DS3ConnectionInfo](https://github.com/tremwil/DS3ConnectionInfo) 的社区 fork，用于显示 Dark Souls III 在线房间玩家的连接信息和本地同步角色数据。程序以只读方式获取新增角色属性；原有入侵快捷键等功能仍沿用上游实现。
 
-当前版本：`v4.5.0-cn.1`，适配 Dark Souls III `1.15.2.0`、Windows x64 和 .NET Framework 4.7.2。
+当前版本：`v4.5.0-cn.2`，适配 Dark Souls III `1.15.2.0`、Windows x64 和 .NET Framework 4.7.2。
 
 ## 主要功能
 
@@ -15,7 +15,7 @@
 
 ## 下载与运行
 
-从本 fork 的 **Releases** 页面下载 `DS3ConnectionInfo-v4.5.0-cn.1-win-x64.exe`，直接运行即可。单文件会把运行组件释放到 `%LOCALAPPDATA%\DS3ConnectionInfo\v4.5.0-cn.1\`；无需手动解压或携带 DLL。程序会请求管理员权限，因为原有延迟检测通过 Windows ETW 读取网络事件。
+从本 fork 的 **Releases** 页面下载 `DS3ConnectionInfo-v4.5.0-cn.2-win-x64.exe`，直接运行即可。单文件会把运行组件释放到 `%LOCALAPPDATA%\DS3ConnectionInfo\v4.5.0-cn.2\`；无需手动解压或携带 DLL。程序会请求管理员权限，因为原有延迟检测通过 Windows ETW 读取网络事件。
 
 Dark Souls III 需要使用窗口化或无边框窗口模式，悬浮层才能显示。重启游戏后也需要重新启动本程序。
 

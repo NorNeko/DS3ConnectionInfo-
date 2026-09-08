@@ -12,16 +12,16 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Single-file launcher for DS3ConnectionInfo")]
 [assembly: AssemblyCompany("DS3ConnectionInfo community fork")]
 [assembly: AssemblyProduct("DS3ConnectionInfo")]
-[assembly: AssemblyVersion("4.5.0.1")]
-[assembly: AssemblyFileVersion("4.5.0.1")]
+[assembly: AssemblyVersion("4.5.0.2")]
+[assembly: AssemblyFileVersion("4.5.0.2")]
 
 namespace DS3ConnectionInfo.SingleFile
 {
     internal static class Program
     {
-        private const string ReleaseName = "v4.5.0-cn.1";
+        private const string ReleaseName = "v4.5.0-cn.2";
         private const string InnerExecutable = "DS3ConnectionInfo.App.exe";
-        private const string MutexName = "Local\\DS3ConnectionInfo.SingleFile.v4.5.0-cn.1";
+        private const string MutexName = "Local\\DS3ConnectionInfo.SingleFile.v4.5.0-cn.2";
 
         private static readonly KeyValuePair<string, string>[] Payload =
         {

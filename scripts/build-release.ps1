@@ -7,7 +7,7 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 $projectPath = Join-Path $repoRoot 'DS3ConnectionInfo\DS3ConnectionInfo.csproj'
 $payloadDirectory = Join-Path $repoRoot 'artifacts\payload'
 $releaseDirectory = Join-Path $repoRoot 'artifacts\release'
-$releaseName = 'v4.5.0-cn.1'
+$releaseName = 'v4.5.0-cn.2'
 $releaseFile = Join-Path $releaseDirectory "DS3ConnectionInfo-$releaseName-win-x64.exe"
 
 function Reset-Directory([string]$path) {

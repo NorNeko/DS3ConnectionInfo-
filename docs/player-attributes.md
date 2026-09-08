@@ -18,7 +18,7 @@
 
 选择字段后，使用原有开关控制显示/隐藏。主窗口与悬浮层同步显示/隐藏同一字段，以原有悬浮层选择作为升级时的依据。新增字段默认隐藏，旧字段的设置保持不变。每一行对应 Slot 1–5 的玩家，不使用游戏锁定目标。未加载或读取失败显示 `—`，死亡时可正常显示 `0 / 最大生命值`。
 
-GitHub Release 使用 `artifacts/release/DS3ConnectionInfo-v4.5.0-cn.1-win-x64.exe` 单文件产物。启动器会将 `steam_api64.dll` 和 ETW x64 组件释放到固定的本地应用目录，然后启动实际程序。构建方法见 [BUILDING.md](../BUILDING.md)。关闭新程序、运行原来的工具即可回退；此功能不修改存档或角色数据。
+GitHub Release 使用 `artifacts/release/DS3ConnectionInfo-v4.5.0-cn.2-win-x64.exe` 单文件产物。启动器会将 `steam_api64.dll` 和 ETW x64 组件释放到固定的本地应用目录，然后启动实际程序。构建方法见 [BUILDING.md](../BUILDING.md)。关闭新程序、运行原来的工具即可回退；此功能不修改存档或角色数据。
 
 ## 读取与兼容性依据
 
@@ -82,4 +82,4 @@ GitHub Release 使用 `artifacts/release/DS3ConnectionInfo-v4.5.0-cn.1-win-x64.e
 
 本轮验证：Debug 与最终合并 Release 的 36 项回归检查，覆盖已有属性读取及双语功能，并新增字段联动、排序恢复、颜色按字段绑定、恢复默认和真实悬浮单元格绘制。另以独立测试进程检查设置持久化。不自动触发入侵、退出会话或改变游戏数据。
 
-最终发行版使用固定的 `%LOCALAPPDATA%\DS3ConnectionInfo\v4.5.0-cn.1\` 内部运行目录，使单文件从不同位置启动时仍复用同一套应用设置。
+最终发行版使用固定的 `%LOCALAPPDATA%\DS3ConnectionInfo\v4.5.0-cn.2\` 内部运行目录，使单文件从不同位置启动时仍复用同一套应用设置。

@@ -1,6 +1,6 @@
-# DS3ConnectionInfo 中文增强版
+# DS3ConnectionInfo 汉化修改版
 
-这是 [tremwil/DS3ConnectionInfo](https://github.com/tremwil/DS3ConnectionInfo) 的社区 fork，用于显示 Dark Souls III 在线房间玩家的连接信息和本地同步角色数据。程序以只读方式获取新增角色属性；原有入侵快捷键等功能仍沿用上游实现。
+这是 [tremwil/DS3ConnectionInfo](https://github.com/tremwil/DS3ConnectionInfo) 的社区 fork，用于显示 Dark Souls III 在线房间玩家的连接信息和本地同步角色数据。程序以只读方式获取新增角色属性；原有入侵快捷键等功能仍沿用上游实现。此项目会维护，如有问题和建议，请提交issues。
 
 当前版本：`v4.5.0-cn.2`，适配 Dark Souls III `1.15.2.0`、Windows x64 和 .NET Framework 4.7.2。
 
@@ -8,8 +8,7 @@
 
 - 显示玩家名称、Steam ID、地区、延迟、队伍等原有信息。
 - 显示等级、生命力、集中力、持久力、力量、敏捷、智力、信仰和当前/最大生命值。
-- 主窗口与游戏悬浮层同步字段显隐和排序。
-- 为每个悬浮字段单独设置文字颜色，也可恢复原有阵营和延迟配色规则。
+- 优化用户操作体验，主窗口与游戏悬浮层同步字段允许用户自定义排序。允许为每个悬浮字段单独设置文字颜色，也可恢复原有阵营和延迟配色规则。
 - 默认简体中文，可在界面右上角即时切换中文或 English，并保存选择。
 - 已移除原作者仓库的过时版本检查，不再在启动时弹出旧版更新通知。
 
